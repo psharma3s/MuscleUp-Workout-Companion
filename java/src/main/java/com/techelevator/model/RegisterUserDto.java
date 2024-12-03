@@ -1,6 +1,8 @@
 package com.techelevator.model;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+
 /*
     The acronym DTO is being used for "data transfer object". It means that this type of class is specifically
     created to transfer data between the client and the server. For example, CredentialsDto represents the data a client must
@@ -11,13 +13,28 @@ public class RegisterUserDto {
 
     @NotEmpty
     private String username;
+
     @NotEmpty
     private String password;
+
     @NotEmpty
     private String confirmPassword;
+
     @NotEmpty(message = "Please select a role for this user.")
     private String role;
 
+    @NotEmpty(message = "Name cannot be empty.")
+    private String name;
+
+    @NotEmpty(message = "Email cannot be empty.")
+    @Email(message = "Please provide a valid email address.")
+    private String email;
+
+    private String workoutGoals; // Optional field
+
+    private String profilePictureUrl; // URL or file path for the profile picture
+
+    // Getters and Setters
     public String getUsername() {
         return username;
     }
@@ -48,5 +65,37 @@ public class RegisterUserDto {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getWorkoutGoals() {
+        return workoutGoals;
+    }
+
+    public void setWorkoutGoals(String workoutGoals) {
+        this.workoutGoals = workoutGoals;
+    }
+
+    public String getProfilePictureUrl() {
+        return profilePictureUrl;
+    }
+
+    public void setProfilePictureUrl(String profilePictureUrl) {
+        this.profilePictureUrl = profilePictureUrl;
     }
 }

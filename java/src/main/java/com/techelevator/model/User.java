@@ -15,6 +15,10 @@ public class User {
    @JsonIgnore
    private boolean activated;
    private Set<Authority> authorities = new HashSet<>();
+   private String name;
+   private String email;
+   private String workoutGoals;
+   private String profilePictureUrl; // URL or file path for the profile picture
 
    public User() { }
 
@@ -74,6 +78,38 @@ public class User {
       }
    }
 
+   public String getName() {
+      return name;
+   }
+
+   public void setName(String name) {
+      this.name = name;
+   }
+
+   public String getEmail() {
+      return email;
+   }
+
+   public void setEmail(String email) {
+      this.email = email;
+   }
+
+   public String getWorkoutGoals() {
+      return workoutGoals;
+   }
+
+   public void setWorkoutGoals(String workoutGoals) {
+      this.workoutGoals = workoutGoals;
+   }
+
+   public String getProfilePictureUrl() {
+      return profilePictureUrl;
+   }
+
+   public void setProfilePictureUrl(String profilePictureUrl) {
+      this.profilePictureUrl = profilePictureUrl;
+   }
+
    @Override
    public boolean equals(Object o) {
       if (this == o) return true;
@@ -83,12 +119,16 @@ public class User {
               activated == user.activated &&
               Objects.equals(username, user.username) &&
               Objects.equals(password, user.password) &&
-              Objects.equals(authorities, user.authorities);
+              Objects.equals(authorities, user.authorities) &&
+              Objects.equals(name, user.name) &&
+              Objects.equals(email, user.email) &&
+              Objects.equals(workoutGoals, user.workoutGoals) &&
+              Objects.equals(profilePictureUrl, user.profilePictureUrl);
    }
 
    @Override
    public int hashCode() {
-      return Objects.hash(id, username, password, activated, authorities);
+      return Objects.hash(id, username, password, activated, authorities, name, email, workoutGoals, profilePictureUrl);
    }
 
    @Override
@@ -98,6 +138,10 @@ public class User {
               ", username='" + username + '\'' +
               ", activated=" + activated +
               ", authorities=" + authorities +
+              ", name='" + name + '\'' +
+              ", email='" + email + '\'' +
+              ", workoutGoals='" + workoutGoals + '\'' +
+              ", profilePictureUrl='" + profilePictureUrl + '\'' +
               '}';
    }
 }
