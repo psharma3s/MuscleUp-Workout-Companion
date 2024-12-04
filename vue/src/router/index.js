@@ -7,6 +7,7 @@ import LoginView from '../views/LoginView.vue';
 import LogoutView from '../views/LogoutView.vue';
 import RegisterView from '../views/RegisterView.vue';
 import EditProfile from '../views/EditProfile.vue';
+import CheckInOutView from "../views/CheckInOutView.vue";
 
 /**
  * The Vue Router is used to "direct" the browser to render a specific view component
@@ -56,7 +57,12 @@ const routes = [
     meta: {
       requiresAuth: true
     }
-  }
+  },
+  {
+    path: "/gym-checkin",
+    name: "CheckInOut",
+    component: CheckInOutView,
+  },
 ];
 
 // Create the router
