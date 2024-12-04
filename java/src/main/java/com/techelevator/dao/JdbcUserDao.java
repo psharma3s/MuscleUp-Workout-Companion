@@ -106,6 +106,16 @@ public class JdbcUserDao implements UserDao {
         }
     }
 
+    @Override
+    public void updateUserProfile(int userId, String name, String email, String workoutGoals, String profilePictureUrl) {
+        String sql = "UPDATE users SET name = ?, email = ?, workout_goals = ?, profile_picture = ? WHERE user_id = ?";
+        try {
+            jdbcTemplate.update(sql, name, email, workoutGoals, profilePictureUrl, userId);
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to server or database", e);
+        }
+    }
+
 
     private User mapRowToUser(SqlRowSet rs) {
         User user = new User();
@@ -120,4 +130,6 @@ public class JdbcUserDao implements UserDao {
         user.setActivated(true);
         return user;
     }
+
+
 }

@@ -17,4 +17,7 @@ public interface UserDao {
 
 
     void updateProfilePicture(int userId, String profilePictureUrl);
+
+    void updateUserProfile(int userId, String name, String email, String workoutGoals, String profilePictureUrl);
+
 }

@@ -23,6 +23,7 @@ import com.techelevator.security.jwt.TokenProvider;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -78,35 +79,69 @@ public class AuthenticationController {
     }
 
     @PostMapping(path = "/upload-profile-picture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @CrossOrigin
     public ResponseEntity<Map<String, String>> uploadProfilePicture(@RequestParam("file") MultipartFile file, @RequestParam("userId") int userId) {
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body(Map.of("error", "File is empty"));
         }
 
         try {
-            // Set the centralized upload directory
-            String uploadDir = "C:/Users/PraveshSharma/uploads/";
-            File directory = new File(uploadDir);
+            String userPicturesDir = System.getenv("USERPROFILE") + "\\Pictures";
+            File directory = new File(userPicturesDir);
 
             // Create the directory if it does not exist
             if (!directory.exists()) {
-                directory.mkdirs();
+                if (!directory.mkdirs()) {
+                    throw new IOException("Failed to create directory: " + userPicturesDir);
+                }
             }
 
-            // Generate a unique file name
             String fileName = userId + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
-            File destination = new File(uploadDir + fileName);
+            File destination = new File(userPicturesDir + fileName);
 
-            // Save the file
             file.transferTo(destination);
 
-            // Save the relative file path in the database
             String filePath = "/uploads/" + fileName;
             userDao.updateProfilePicture(userId, filePath);
 
             return ResponseEntity.ok(Map.of("filePath", filePath));
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to upload profile picture.", e);
+        }
+    }
+
+    @PutMapping("/profile")
+    @CrossOrigin
+    public ResponseEntity<String> updateProfile(@RequestBody User user, Principal principal) {
+        try {
+
+            String username = principal.getName();
+
+            User existingUser = userDao.getUserByUsername(username);
+
+            if (existingUser == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+            }
+
+            existingUser.setName(user.getName());
+            existingUser.setEmail(user.getEmail());
+            existingUser.setWorkoutGoals(user.getWorkoutGoals());
+            existingUser.setProfilePictureUrl(user.getProfilePictureUrl());
+
+
+            userDao.updateUserProfile(
+                    existingUser.getId(),
+                    existingUser.getName(),
+                    existingUser.getEmail(),
+                    existingUser.getWorkoutGoals(),
+                    existingUser.getProfilePictureUrl()
+            );
+            System.out.println("Payload User: " + existingUser.getName() + ", " + existingUser.getEmail() + ", " + existingUser.getId());
+
+            return ResponseEntity.ok("Profile updated successfully.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update profile.");
         }
     }
 
