@@ -1,8 +1,12 @@
 import { createStore as _createStore } from 'vuex';
 import axios from 'axios';
+import workoutMetrics from './modules/workoutMetrics';
 
 export function createStore(currentToken, currentUser) {
   let store = _createStore({
+    modules: {
+      workoutMetrics,
+    },
     state: {
       token: currentToken || '',
       user: currentUser || {}
