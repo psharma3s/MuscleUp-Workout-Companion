@@ -13,6 +13,7 @@ public class WorkoutMetrics {
     private String workoutType;
     private int workoutDuration;
     private String exercise;
+    private int sets;
 
     // Getters and Setters
     public int getMetricId() {
@@ -93,5 +94,13 @@ public class WorkoutMetrics {
 
     public void setExercise(String exercise) {
         this.exercise = exercise;
+    }
+
+    public int getSets() {
+        return sets;
+    }
+
+    public void setSets(int sets) {
+        this.sets = sets;
     }
 }

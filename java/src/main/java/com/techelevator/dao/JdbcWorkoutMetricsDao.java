@@ -19,10 +19,10 @@ public class JdbcWorkoutMetricsDao implements WorkoutMetricsDao {
 
     @Override
     public void addMetric(WorkoutMetrics metric) {
-        String sql = "INSERT INTO workout_metrics (user_id, equipment_used, weights, reps, date, distance, workout_type, workout_duration, exercise) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO workout_metrics (user_id, equipment_used, weights, reps, date, distance, workout_type, workout_duration, exercise, sets) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql, metric.getUserId(), metric.getEquipmentUsed(),
-                metric.getWeights(), metric.getReps(), metric.getDate(), metric.getDistance(), metric.getWorkoutType(), metric.getWorkoutDuration(), metric.getExercise());
+                metric.getWeights(), metric.getReps(), metric.getDate(), metric.getDistance(), metric.getWorkoutType(), metric.getWorkoutDuration(), metric.getExercise(), metric.getSets());
     }
 
     @Override
@@ -59,6 +59,7 @@ public class JdbcWorkoutMetricsDao implements WorkoutMetricsDao {
         metric.setWorkoutType(rs.getString("workout_type"));
         metric.setWorkoutDuration(rs.getInt("workout_duration"));
         metric.setExercise(rs.getString("exercise"));
+        metric.setSets(rs.getInt("sets"));
         return metric;
     }
 }

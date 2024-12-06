@@ -118,13 +118,20 @@
       <!-- Dynamic workout tracking -->
       <div v-if="isWorkoutActive">
         <div v-if="workoutType === 'strength'">
-          <label for="strengthReps">Enter Strength Reps:</label>
+          <label for="strengthReps">Enter reps:</label>
           <input
             type="number"
             id="strengthReps"
             v-model="reps"
             placeholder="Enter number of reps"
           />
+          <label for="strengthSet"> and/or enter sets:</label>
+            <input
+              type="number"
+              id="strengthSets"
+              v-model="strengthSets"
+              placeholder="Enter number of sets"
+            />
         </div>
         <div v-else-if="workoutType === 'cardio'">
           <p>Track distance and input here:</p>
@@ -133,7 +140,7 @@
             type="text"
             id="distance"
             v-model="distance"
-            placeholder="Enter distance ran"
+            placeholder="Enter distance moved"
           />
           <label for="cardioReps"> and/or enter reps:</label>
           <input
@@ -142,6 +149,13 @@
             v-model="cardioReps"
             placeholder="Enter number of reps"
           />
+          <label for="cardioSets"> and/or enter sets:</label>
+            <input
+              type="number"
+              id="cardioSets"
+              v-model="cardioSets"
+              placeholder="Enter number of sets"
+            />
         </div>
       </div>
   
@@ -163,6 +177,8 @@
         <p v-if="workoutSummary.distance">Distance: {{ workoutSummary.distance }}</p>
         <p v-if="workoutSummary.reps">Strength Reps: {{ workoutSummary.reps }}</p>
         <p v-if="workoutSummary.cardioReps">Cardio Reps: {{ workoutSummary.cardioReps }}</p>
+        <p v-if="workoutSummary.cardioSets">Cardio Sets: {{ workoutSummary.cardioSets }}</p>
+        <p v-if="workoutSummary.strengthSets">Strength Sets: {{ workoutSummary.strengthSets }}</p>
       </div>
     </div>
   </template>
@@ -185,6 +201,8 @@
         stop: null, // workout stop time
         isWorkoutActive: false, // flag for workout state
         workoutSummary: null, // final workout payload
+        cardioSets: null,
+        strengthSets: null
       };
     },
     methods: {
@@ -211,6 +229,8 @@
             reps: this.workoutType === 'strength' ? this.reps : null,
             cardioReps: this.workoutType === 'cardio' ? this.cardioReps : null,
             distance: this.workoutType === 'cardio' ? this.distance : null,
+            cardioSets: this.workoutType === 'cardio' ? this.cardioSets : null,
+            strengthSets: this.workoutType === 'strength' ? this.strengthSets : null
           };
 
           let equipmentUsed;
@@ -249,7 +269,8 @@
           distance: this.distance || 0,
           workoutType: this.workoutType || "None",
           workoutDuration: workoutTime,
-          exercise: exerciseCompleted
+          exercise: exerciseCompleted,
+          sets: this.cardioSets || this.strengthSets || 0,
           };
 
           console.log("Metric being sent:", metric);
@@ -269,6 +290,8 @@
         this.stop = null;
         this.equipment = null;
         this.exercise = null;
+        this.cardioSets = null;
+        this.strengthSets = null;
       },
     },
     computed: {
