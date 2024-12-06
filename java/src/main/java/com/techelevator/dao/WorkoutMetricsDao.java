@@ -13,4 +13,6 @@ public interface WorkoutMetricsDao {
     List<WorkoutMetrics> getMetricsByUserId(int userId);
 
     List<WorkoutMetrics> getAllMetrics();
+
+    List<WorkoutMetrics> getMetricsWithEquipmentByUserId(int userId);
 }

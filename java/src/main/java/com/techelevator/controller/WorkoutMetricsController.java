@@ -31,4 +31,9 @@ public class WorkoutMetricsController {
     public List<WorkoutMetrics> getAllMetrics() {
         return workoutMetricsDao.getAllMetrics();
     }
+
+    @GetMapping("/{userId}/equipment")
+    public List<WorkoutMetrics> getMetricsWithEquipment(@PathVariable int userId) {
+        return workoutMetricsDao.getMetricsWithEquipmentByUserId(userId);
+    }
 }

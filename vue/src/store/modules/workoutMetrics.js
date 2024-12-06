@@ -4,6 +4,7 @@ export default {
   namespaced: true, // Enables namespacing for the module
   state: {
     metrics: [], // Store workout metrics data here
+    equipmentMetrics: [],
   },
   mutations: {
     SET_METRICS(state, metrics) {
@@ -11,6 +12,10 @@ export default {
     },
     ADD_METRIC(state, metric) {
       state.metrics.push(metric);
+    },
+    SET_EQUIPMENT_METRICS(state, metrics) {
+      console.log('Committing Equipment Metrics:', metrics);
+      state.equipmentMetrics = metrics;
     },
   },
   actions: {
@@ -42,10 +47,20 @@ export default {
           console.error('Error adding metric:', error);
         });
     },
+    async fetchMetricsWithEquipment({ commit }, userId) {
+      try {
+        const response = await axios.get(`/api/metrics/${userId}/equipment`);
+        console.log('API Response for Equipment Metrics:', response.data);
+        commit('SET_EQUIPMENT_METRICS', response.data);
+      } catch (error) {
+        console.error('Error fetching equipment metrics:', error);
+      }
+    },
   },
   getters: {
     metrics(state) {
       return state.metrics;
     },
+    equipmentMetrics: (state) => state.equipmentMetrics,
   },
 };

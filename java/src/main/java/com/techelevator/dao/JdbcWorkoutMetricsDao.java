@@ -62,4 +62,15 @@ public class JdbcWorkoutMetricsDao implements WorkoutMetricsDao {
         metric.setSets(rs.getInt("sets"));
         return metric;
     }
+
+    @Override
+    public List<WorkoutMetrics> getMetricsWithEquipmentByUserId(int userId) {
+        List<WorkoutMetrics> metrics = new ArrayList<>();
+        String sql = "SELECT * FROM workout_metrics WHERE user_id = ? AND equipment_used IS NOT NULL AND equipment_used != '' AND equipment_used != 'None'";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
+        while (results.next()) {
+            metrics.add(mapRowToWorkoutMetrics(results));
+        }
+        return metrics;
+    }
 }
