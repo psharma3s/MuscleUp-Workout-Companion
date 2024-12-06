@@ -32,4 +32,15 @@ CREATE TABLE user_gym_visits (
 );
 
 
+ALTER TABLE workout_metrics
+ADD COLUMN distance VARCHAR(255),
+ADD COLUMN workout_type VARCHAR(255),
+ADD COLUMN workout_duration INT,
+ADD COLUMN exercise VARCHAR(255);
+
+
+GRANT INSERT, SELECT, UPDATE ON TABLE workout_metrics TO final_capstone_appuser;
+GRANT USAGE, SELECT, UPDATE ON SEQUENCE workout_metrics_metric_id_seq TO final_capstone_appuser;
+
+
 COMMIT TRANSACTION;

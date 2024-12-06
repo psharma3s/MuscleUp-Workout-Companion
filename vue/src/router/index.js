@@ -11,7 +11,7 @@ import EditProfile from '../views/EditProfile.vue';
 import WorkoutMetrics from '../views/WorkoutMetrics.vue';
 import CheckInOutView from "../views/CheckInOutView.vue";
 import StartExercise from "../views/StartExerciseView.vue";
-
+import ProfileView from '../views/ProfileView.vue';
 /**
  * The Vue Router is used to "direct" the browser to render a specific view component
  * inside of App.vue depending on the URL.
@@ -82,6 +82,12 @@ const routes = [
     meta: {
       requiresAuth: true,
     }
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: ProfileView,
+    meta: { requiresAuth: true },
   },
 ];
 
