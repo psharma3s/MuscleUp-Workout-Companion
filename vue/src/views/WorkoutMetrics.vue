@@ -1,7 +1,7 @@
 <template>
   <div class="metrics">
     <h1>Workout Metrics</h1>
-    <table v-if="metrics.length">
+    <table v-if="metrics && metrics.length">
       <thead>
         <tr>
           <th>Date</th>
@@ -27,13 +27,13 @@
 export default {
   computed: {
     metrics() {
-      return this.$store.getters.metrics;
+       return this.$store.getters['workoutMetrics/metrics'] || [];
     },
   },
   created() {
     const userId = this.$store.state.user?.id;
     if (userId) {
-      this.$store.dispatch('fetchMetricsByUserId', userId).catch((error) => {
+      this.$store.dispatch('workoutMetrics/fetchMetricsByUserId', userId).catch((error) => {
         console.error('Failed to load metrics:', error);
       });
     }

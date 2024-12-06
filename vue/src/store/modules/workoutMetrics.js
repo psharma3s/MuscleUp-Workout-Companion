@@ -1,12 +1,16 @@
 import axios from 'axios';
 
 export default {
+  namespaced: true, // Enables namespacing for the module
   state: {
     metrics: [], // Store workout metrics data here
   },
   mutations: {
     SET_METRICS(state, metrics) {
       state.metrics = metrics;
+    },
+    ADD_METRIC(state, metric) {
+      state.metrics.push(metric);
     },
   },
   actions: {
@@ -27,6 +31,16 @@ export default {
         console.error('Error fetching all metrics:', error);
         throw error;
       }
+    },
+    async addMetric({ commit }, metric) {
+      return axios
+        .post('/api/metrics', metric)
+        .then(() => {
+          commit('ADD_METRIC', metric);
+        })
+        .catch((error) => {
+          console.error('Error adding metric:', error);
+        });
     },
   },
   getters: {

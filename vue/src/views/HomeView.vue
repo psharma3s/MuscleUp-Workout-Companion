@@ -58,6 +58,11 @@
       route: "/gym-checkin",
       icon: "@/assets/icons/gym-checkin.png",
      },
+     {
+      name: "Start Workout (temporary button)",
+      route: "/startworkout",
+      icon: "@/assets/icons/gym-checkin.png",
+     }
     ],
    };
   },

@@ -10,6 +10,7 @@ import RegisterView from '../views/RegisterView.vue';
 import EditProfile from '../views/EditProfile.vue';
 import WorkoutMetrics from '../views/WorkoutMetrics.vue';
 import CheckInOutView from "../views/CheckInOutView.vue";
+import StartExercise from "../views/StartExerciseView.vue";
 
 /**
  * The Vue Router is used to "direct" the browser to render a specific view component
@@ -62,17 +63,25 @@ const routes = [
   },
 
   {
-    path: '/workout-metrics', 
+    path: '/workout-metrics',
     name: 'WorkoutMetrics',
     component: () => import("@/views/WorkoutMetrics.vue"),
     meta: {
-      requiresAuth: true, 
+      requiresAuth: true,
     }
   },
   {
     path: "/gym-checkin",
     name: "CheckInOut",
     component: CheckInOutView,
+  },
+  {
+    path: '/startworkout',
+    name: 'StartWorkout',
+    component: StartExercise,
+    meta: {
+      requiresAuth: true,
+    }
   },
 ];
 
@@ -92,7 +101,7 @@ router.beforeEach((to) => {
 
   // If it does and they are not logged in, send the user to "/login"
   if (requiresAuth && store.state.token === '') {
-    return {name: "login"};
+    return { name: "login" };
   }
   // Otherwise, do nothing and they'll go to their next destination
 });

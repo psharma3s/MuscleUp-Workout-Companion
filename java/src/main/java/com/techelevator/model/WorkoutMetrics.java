@@ -9,6 +9,10 @@ public class WorkoutMetrics {
     private int weights;
     private int reps;
     private LocalDateTime date;
+    private String distance;
+    private String workoutType;
+    private int workoutDuration;
+    private String exercise;
 
     // Getters and Setters
     public int getMetricId() {
@@ -57,5 +61,37 @@ public class WorkoutMetrics {
 
     public void setDate(LocalDateTime date) {
         this.date = date;
+    }
+
+    public String getDistance() {
+        return distance;
+    }
+
+    public void setDistance(String distance) {
+        this.distance = distance;
+    }
+
+    public String getWorkoutType() {
+        return workoutType;
+    }
+
+    public void setWorkoutType(String workoutType) {
+        this.workoutType = workoutType;
+    }
+
+    public int getWorkoutDuration() {
+        return workoutDuration;
+    }
+
+    public void setWorkoutDuration(int workoutDuration) {
+        this.workoutDuration = workoutDuration;
+    }
+
+    public String getExercise() {
+        return exercise;
+    }
+
+    public void setExercise(String exercise) {
+        this.exercise = exercise;
     }
 }
