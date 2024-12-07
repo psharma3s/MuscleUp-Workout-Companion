@@ -46,5 +46,27 @@ GRANT USAGE, SELECT, UPDATE ON SEQUENCE workout_metrics_metric_id_seq TO final_c
 ALTER TABLE workout_metrics
 ADD COLUMN sets INT;
 
+CREATE TABLE classes (
+    class_id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    class_date DATE NOT NULL,
+    class_time TIME NOT NULL,
+    instructor VARCHAR(255),
+    duration VARCHAR(50),
+    calories_burned VARCHAR(50)
+);
+
+CREATE TABLE class_registrations (
+    registration_id SERIAL PRIMARY KEY,
+    class_id INT NOT NULL REFERENCES classes(class_id),
+    user_id INT NOT NULL REFERENCES users(user_id),
+    UNIQUE (class_id, user_id)
+);
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE classes TO final_capstone_appuser;
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE class_registrations TO final_capstone_appuser;
+
+GRANT USAGE, SELECT, UPDATE ON SEQUENCE classes_class_id_seq TO final_capstone_appuser;
+GRANT USAGE, SELECT, UPDATE ON SEQUENCE class_registrations_registration_id_seq TO final_capstone_appuser;
 
 COMMIT TRANSACTION;
