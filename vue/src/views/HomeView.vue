@@ -5,6 +5,13 @@
       <div class="logo-container">
         <img src="@/assets/images/logo.jpg" alt="Logo" class="logo" />
       </div>
+      <div class="check-in-out-section">
+        <button @click="checkIn" :disabled="checkInStatus" class="check-in-button">Check In</button>
+        <div v-if="checkInStatus" class="current-session-time">
+          Current Session Time: {{ liveSessionTime }}
+        </div>
+        <button @click="checkOut" :disabled="!checkInStatus" class="check-out-button">Check Out</button>
+      </div>
       <!-- Navigation Buttons -->
       <div class="nav-buttons">
         <router-link to="/" class="nav-button">🏠 Home</router-link>
@@ -272,7 +279,7 @@ export default {
       features: [
         { name: 'View Workout Metrics', route: '/workout-metrics' },
         { name: 'Profile', route: '/profile' },
-        { name: 'Gym Check-In / Check-Out', route: '/gym-checkin' },
+        { name: 'History', route: '/gym-checkin' },
         { name: 'Logout', route: '/logout' },
       ],
       calendarEvents: [],
@@ -297,6 +304,10 @@ export default {
         duration: '',
         caloriesBurned: ''
       },
+      checkInStatus: false,
+      liveSessionTime: "00:00:00",
+      checkInTime: null,
+      timerInterval: null,
     };
   },
   async mounted() {
@@ -487,6 +498,98 @@ export default {
       this.showWhichClassToDropPopup = false;
       this.showCreateClassForm = false;
     },
+    async fetchCheckInStatus() {
+      try {
+        const response = await axios.get("/gym-visit/check-in-status", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        this.checkInStatus = response.data.checkedIn;
+
+        if (this.checkInStatus) {
+          this.fetchCheckInTime();
+        } else {
+          this.stopLiveTimer();
+          this.liveSessionTime = "00:00:00";
+        }
+      } catch (error) {
+        console.error("Error fetching check-in status:", error.message);
+      }
+    },
+    async fetchCheckInTime() {
+      try {
+        const response = await axios.get("/gym-visit/current-session-time", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        this.checkInTime = new Date(response.data);
+
+        if (!isNaN(this.checkInTime.getTime())) {
+          this.startLiveTimer();
+        } else {
+          console.error("Invalid check-in time received:", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching check-in time:", error.message);
+        this.checkInTime = null;
+      }
+    },
+    startLiveTimer() {
+      this.stopLiveTimer();
+
+      if (!this.checkInTime || isNaN(this.checkInTime.getTime())) {
+        console.error("Cannot start live timer: invalid check-in time.");
+        return;
+      }
+
+      this.timerInterval = setInterval(() => {
+        const now = new Date();
+        const elapsed = Math.floor((now - this.checkInTime) / 1000);
+        const hours = Math.floor(elapsed / 3600).toString().padStart(2, "0");
+        const minutes = Math.floor((elapsed % 3600) / 60).toString().padStart(2, "0");
+        const seconds = (elapsed % 60).toString().padStart(2, "0");
+        this.liveSessionTime = `${hours}:${minutes}:${seconds}`;
+      }, 1000);
+    },
+    stopLiveTimer() {
+      if (this.timerInterval) {
+        clearInterval(this.timerInterval);
+        this.timerInterval = null;
+      }
+    },
+    async checkIn() {
+      try {
+        await axios.post(
+          "/gym-visit/check-in",
+          {},
+          {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          }
+        );
+        this.fetchCheckInStatus();
+      } catch (error) {
+        console.error("Error during check-in:", error.message);
+      }
+    },
+    async checkOut() {
+      try {
+        await axios.post(
+          "/gym-visit/check-out",
+          {},
+          {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          }
+        );
+        this.stopLiveTimer();
+        this.fetchCheckInStatus();
+      } catch (error) {
+        console.error("Error during check-out:", error.message);
+      }
+    },
+  },
+  mounted() {
+    this.fetchCheckInStatus();
+  },
+  beforeDestroy() {
+    this.stopLiveTimer();
   },
 };
 </script>
@@ -529,12 +632,74 @@ body {
 }
 
 .logo-container {
-  flex: 1;
+  flex: 0 0 auto;
 }
 
 .logo {
   width: 150px;
   height: auto;
+}
+
+.check-in-out-section {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  margin-left: 20px;
+}
+
+.check-in-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 5px 15px;
+  border-radius: 5px;
+  font-size: 14px;
+  margin-right: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.check-in-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.check-in-button:hover:enabled {
+  background-color: #45a049;
+}
+
+.current-session-time {
+  font-size: 14px;
+  color: #fff;
+  margin: 0 10px;
+  flex-grow: 1;
+  text-align: center;
+}
+
+.check-out-button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 5px 15px;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.check-out-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.check-out-button:hover:enabled {
+  background-color: #e53935;
+}
+
+.current-session-time {
+  font-size: 14px;
+  color: #fff;
+  margin: 0 10px;
 }
 
 .nav-button,

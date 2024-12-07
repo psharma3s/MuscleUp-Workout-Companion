@@ -7,7 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -45,6 +48,14 @@ public class CheckInOutController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    @GetMapping("/average-time")
+    public ResponseEntity<String> getAverageTime(Principal principal) {
+        String username = principal.getName();
+        int userId = checkInOutService.getUserIdByUsername(username);
+
+        String averageTime = checkInOutService.calculateAverageTime(userId);
+        return ResponseEntity.ok(averageTime);
+    }
 
     @GetMapping("/total-time")
     public ResponseEntity<String> getTotalTime(Principal principal) {
@@ -54,16 +65,37 @@ public class CheckInOutController {
         return ResponseEntity.ok(totalTime);
     }
 
-
     @GetMapping("/check-in-status")
     public ResponseEntity<Map<String, Boolean>> getCheckInStatus(Principal principal) {
         String username = principal.getName();
         int userId = checkInOutService.getUserIdByUsername(username);
-        boolean isCheckedIn = checkInOutService.isUserCheckedIn(userId);
 
+        boolean isCheckedIn = checkInOutService.isUserCheckedIn(userId);
         Map<String, Boolean> response = new HashMap<>();
         response.put("checkedIn", isCheckedIn);
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/current-session-time")
+    public ResponseEntity<String> getCurrentSessionTime(Principal principal) {
+        String username = principal.getName();
+        int userId = checkInOutService.getUserIdByUsername(username);
+
+        LocalDateTime checkInTime = checkInOutService.getOngoingCheckInTime(userId);
+        if (checkInTime == null) {
+            return ResponseEntity.ok("Not Checked In");
+        }
+
+        return ResponseEntity.ok(checkInTime.toString());
+    }
+
+    @GetMapping("/check-in-dates")
+    public ResponseEntity<List<LocalDate>> getCheckInDates(Principal principal) {
+        String username = principal.getName();
+        int userId = checkInOutService.getUserIdByUsername(username);
+
+        List<LocalDate> checkInDates = checkInOutService.getCheckInDates(userId);
+        return ResponseEntity.ok(checkInDates);
     }
 }
