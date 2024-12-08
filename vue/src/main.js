@@ -24,6 +24,16 @@ if (currentToken) {
 // Create the Vuex store passing in the stored credentials
 const store = createStore(currentToken, currentUser);
 
+// Interceptor to remove the Authorization header for ImgBB requests
+axios.interceptors.request.use((config) => {
+  if (config.url && config.url.includes('api.imgbb.com')) {
+    delete config.headers['Authorization'];  // Remove the Authorization header for ImgBB requests
+  }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
+
 const app = createApp(CapstoneApp);
 app.use(store);
 app.use(router);

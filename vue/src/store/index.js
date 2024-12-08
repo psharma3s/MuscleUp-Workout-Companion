@@ -11,7 +11,13 @@ export function createStore(currentToken, currentUser) {
     },
     state: {
       token: currentToken || '',
-      user: currentUser || {}
+      user: currentUser || {
+        username: "",
+        name: "",
+        email: "",
+        workoutGoals: "",
+        profilePictureUrl: "", // Add profile picture URL here
+      }
     },
     mutations: {
       SET_AUTH_TOKEN(state, token) {
@@ -19,9 +25,10 @@ export function createStore(currentToken, currentUser) {
         localStorage.setItem('token', token);
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       },
-      SET_USER(state, user) {
-        state.user = user;
-        localStorage.setItem('user', JSON.stringify(user));
+      // Mutation to update user profile
+      SET_USER(state, userData) {
+        state.user = userData;
+        localStorage.setItem('user', JSON.stringify(userData));
       },
       LOGOUT(state) {
         localStorage.removeItem('token');
@@ -31,6 +38,10 @@ export function createStore(currentToken, currentUser) {
         axios.defaults.headers.common = {};
       }
     },
+    actions: {
+      // Optionally, you can use actions if needed
+    },
   });
+
   return store;
 }

@@ -32,13 +32,12 @@
         </router-link>
       </div>
     </div>
+      
 
     <!-- Main Content -->
     <div class="home-header">
       <div class="profile-section">
-        <div class="profile-picture">
-          <img :src="profilePictureUrl" alt="Profile Picture" />
-        </div>
+        
         <div class="welcome-message">
           <h1>
             Welcome, <span class="highlight">{{ userName }}</span

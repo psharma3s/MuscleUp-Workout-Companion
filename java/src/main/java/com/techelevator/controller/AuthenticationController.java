@@ -78,38 +78,6 @@ public class AuthenticationController {
         }
     }
 
-    @PostMapping(path = "/upload-profile-picture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @CrossOrigin
-    public ResponseEntity<Map<String, String>> uploadProfilePicture(@RequestParam("file") MultipartFile file, @RequestParam("userId") int userId) {
-        if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "File is empty"));
-        }
-
-        try {
-            String userPicturesDir = System.getenv("USERPROFILE") + "\\Pictures";
-            File directory = new File(userPicturesDir);
-
-            // Create the directory if it does not exist
-            if (!directory.exists()) {
-                if (!directory.mkdirs()) {
-                    throw new IOException("Failed to create directory: " + userPicturesDir);
-                }
-            }
-
-            String fileName = userId + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
-            File destination = new File(userPicturesDir + fileName);
-
-            file.transferTo(destination);
-
-            String filePath = "/uploads/" + fileName;
-            userDao.updateProfilePicture(userId, filePath);
-
-            return ResponseEntity.ok(Map.of("filePath", filePath));
-        } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to upload profile picture.", e);
-        }
-    }
-
     @PutMapping("/profile")
     @CrossOrigin
     public ResponseEntity<String> updateProfile(@RequestBody User user, Principal principal) {

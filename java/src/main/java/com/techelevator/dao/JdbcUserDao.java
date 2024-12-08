@@ -96,15 +96,6 @@ public class JdbcUserDao implements UserDao {
         }
         return newUser;
     }
-    @Override
-    public void updateProfilePicture(int userId, String filePath) {
-        String sql = "UPDATE users SET profile_picture = ? WHERE user_id = ?";
-        try {
-            jdbcTemplate.update(sql, filePath, userId);
-        } catch (CannotGetJdbcConnectionException e) {
-            throw new DaoException("Unable to connect to server or database", e);
-        }
-    }
 
     @Override
     public void updateUserProfile(int userId, String name, String email, String workoutGoals, String profilePictureUrl) {
