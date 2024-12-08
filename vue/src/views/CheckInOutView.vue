@@ -52,6 +52,16 @@ export default {
       calendarDays: this.generateCalendarDays(), // Calendar days for the current month
     };
   },
+
+  computed: {
+  checkInStatus() {
+    return this.$store.state.checkinTimer.checkInStatus;
+  },
+  liveSessionTime() {
+    return this.$store.state.checkinTimer.liveSessionTime;
+  },
+},
+
   methods: {
     async fetchCheckInStatus() {
       try {

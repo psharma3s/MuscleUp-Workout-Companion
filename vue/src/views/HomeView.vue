@@ -6,16 +6,28 @@
         <img src="@/assets/images/logo.jpg" alt="Logo" class="logo" />
       </div>
       <div class="check-in-out-section">
-        <button @click="checkIn" :disabled="checkInStatus" class="check-in-button">Check In</button>
+        <button
+          @click="toggleCheckInOut"
+          :class="[
+            'check-in-out-button',
+            checkInStatus ? 'check-out' : 'check-in',
+          ]"
+        >
+          {{ checkInStatus ? "Check Out" : "Check In" }}
+        </button>
         <div v-if="checkInStatus" class="current-session-time">
           Current Session Time: {{ liveSessionTime }}
         </div>
-        <button @click="checkOut" :disabled="!checkInStatus" class="check-out-button">Check Out</button>
       </div>
       <!-- Navigation Buttons -->
       <div class="nav-buttons">
         <router-link to="/" class="nav-button">🏠 Home</router-link>
-        <router-link v-for="feature in features" :key="feature.name" :to="feature.route" class="feature-button">
+        <router-link
+          v-for="feature in features"
+          :key="feature.name"
+          :to="feature.route"
+          class="feature-button"
+        >
           {{ feature.name }}
         </router-link>
       </div>
@@ -28,8 +40,14 @@
           <img :src="profilePictureUrl" alt="Profile Picture" />
         </div>
         <div class="welcome-message">
-          <h1>Welcome, <span class="highlight">{{ userName }}</span>!</h1>
-          <p>Your journey to fitness starts here. Explore, progress, and conquer your goals!</p>
+          <h1>
+            Welcome, <span class="highlight">{{ userName }}</span
+            >!
+          </h1>
+          <p>
+            Your journey to fitness starts here. Explore, progress, and conquer
+            your goals!
+          </p>
         </div>
       </div>
     </div>
@@ -45,16 +63,27 @@
     <div class="calendar-section">
       <h2>Upcoming Class Schedule</h2>
       <VCalendar :attributes="calendarDecorations" @dayclick="handleDayClick" />
-      <button v-if="isEmployee" @click="openCreateClassPopup()" class="create-class-button">
+      <button
+        v-if="isEmployee"
+        @click="openCreateClassPopup()"
+        class="create-class-button"
+      >
         Create Class
       </button>
     </div>
 
     <!-- Member's Registered Classes Section -->
-    <div v-if="!isEmployee && myRegisteredClasses.length > 0" class="registered-classes-section">
+    <div
+      v-if="!isEmployee && myRegisteredClasses.length > 0"
+      class="registered-classes-section"
+    >
       <h2>My Registered Classes</h2>
       <ul class="scrollable-list">
-        <li v-for="(cls, idx) in myRegisteredClasses" :key="idx" class="registered-class-item">
+        <li
+          v-for="(cls, idx) in myRegisteredClasses"
+          :key="idx"
+          class="registered-class-item"
+        >
           <h3>{{ cls.name }}</h3>
           <p><strong>Date:</strong> {{ cls.date }}</p>
           <p><strong>Time:</strong> {{ cls.time }}</p>
@@ -69,9 +98,30 @@
     <div v-if="showEmployeeDayPopup" class="popup-overlay">
       <div class="popup">
         <h3>Actions for {{ currentDate }}</h3>
-        <button @click="openCreateClassPopup(currentDate); showEmployeeDayPopup = false;">Create Another Class</button>
-        <button @click="showEmployeeViewClasses = true; showEmployeeDayPopup = false">View Class Info</button>
-        <button @click="showEmployeeDeleteClasses = true; showEmployeeDayPopup = false">Delete Class(es)</button>
+        <button
+          @click="
+            openCreateClassPopup(currentDate);
+            showEmployeeDayPopup = false;
+          "
+        >
+          Create Another Class
+        </button>
+        <button
+          @click="
+            showEmployeeViewClasses = true;
+            showEmployeeDayPopup = false;
+          "
+        >
+          View Class Info
+        </button>
+        <button
+          @click="
+            showEmployeeDeleteClasses = true;
+            showEmployeeDayPopup = false;
+          "
+        >
+          Delete Class(es)
+        </button>
         <button @click="closeAllPopups">Close</button>
       </div>
     </div>
@@ -114,7 +164,12 @@
         <p><strong>Duration:</strong> {{ selectedClass.duration }}</p>
         <p><strong>Registered Members:</strong></p>
         <ul class="scrollable-list">
-          <li v-for="(member, index) in selectedClass.registeredMembers" :key="index">{{ member }}</li>
+          <li
+            v-for="(member, index) in selectedClass.registeredMembers"
+            :key="index"
+          >
+            {{ member }}
+          </li>
         </ul>
         <button @click="showEmployeeClassInfoPopup = false">Close</button>
       </div>
@@ -143,8 +198,12 @@
           <li v-for="(cls, idx) in registeredClassesForDate" :key="idx">
             <strong>{{ cls.name }}</strong> at {{ cls.time }}
             <button @click="viewClassInfo(cls, false)">View Class Info</button>
-            <button @click="showOtherClassesPopup = true">Check Other Classes</button>
-            <button @click="showWhichClassToDropPopup = true">Drop Class</button>
+            <button @click="showOtherClassesPopup = true">
+              Check Other Classes
+            </button>
+            <button @click="showWhichClassToDropPopup = true">
+              Drop Class
+            </button>
           </li>
         </ul>
         <button @click="showDropClassPopup = false">Close</button>
@@ -190,7 +249,12 @@
         <p><strong>Duration:</strong> {{ selectedClass.duration }}</p>
         <p><strong>Registered Members:</strong></p>
         <ul class="scrollable-list">
-          <li v-for="(member, index) in selectedClass.registeredMembers" :key="index">{{ member }}</li>
+          <li
+            v-for="(member, index) in selectedClass.registeredMembers"
+            :key="index"
+          >
+            {{ member }}
+          </li>
         </ul>
         <button @click="showClassInfoPopup = false">Close</button>
       </div>
@@ -199,24 +263,26 @@
     <!-- Create Class Popup -->
     <div v-if="showCreateClassForm" class="popup-overlay">
       <div class="popup">
-        <h3>Create New Class on {{ createClassForDate || 'selected date' }}</h3>
+        <h3>Create New Class on {{ createClassForDate || "selected date" }}</h3>
         <input v-model="newClass.name" placeholder="Class Name" />
         <input v-model="newClass.date" type="date" />
         <input v-model="newClass.time" type="time" />
         <input v-model="newClass.instructor" placeholder="Instructor Name" />
-        <input v-model="newClass.duration" placeholder="Duration (e.g. 60 min)" />
+        <input
+          v-model="newClass.duration"
+          placeholder="Duration (e.g. 60 min)"
+        />
         <button @click="createClassOnServer">Create</button>
         <button @click="showCreateClassForm = false">Close</button>
       </div>
     </div>
-
   </div>
 </template>
 
 <script>
-import axios from 'axios';
-import { Calendar as VCalendar } from 'v-calendar';
-import 'v-calendar/style.css';
+import axios from "axios";
+import { Calendar as VCalendar } from "v-calendar";
+import "v-calendar/style.css";
 
 export default {
   components: {
@@ -224,28 +290,36 @@ export default {
   },
   computed: {
     userName() {
-      return this.$store.state.user.username || 'User';
+      return this.$store.state.user.username || "User";
     },
     profilePictureUrl() {
       // If user.profilePictureUrl is a relative path, ensure it's served from the same origin or through /api
       return this.$store.state.user.profilePictureUrl
         ? `/api${this.$store.state.user.profilePictureUrl}`
-        : '@/assets/icons/default-profile.png';
+        : "@/assets/icons/default-profile.png";
     },
     isEmployee() {
-      return this.$store.state.user.authorities?.some(auth => auth.name === 'ROLE_EMPLOYEE');
+      return this.$store.state.user.authorities?.some(
+        (auth) => auth.name === "ROLE_EMPLOYEE"
+      );
     },
     classesForDate() {
-      return this.calendarEvents.filter(evt => evt.date === this.currentDate);
+      return this.calendarEvents.filter((evt) => evt.date === this.currentDate);
     },
     registeredClassesForDate() {
-      return this.classesForDate.filter(cls => cls.registeredMembers?.includes(this.userName));
+      return this.classesForDate.filter((cls) =>
+        cls.registeredMembers?.includes(this.userName)
+      );
     },
     myRegisteredClasses() {
-      return this.calendarEvents.filter(cls => cls.registeredMembers?.includes(this.userName));
+      return this.calendarEvents.filter((cls) =>
+        cls.registeredMembers?.includes(this.userName)
+      );
     },
     unregisteredClassesForDate() {
-      return this.classesForDate.filter(cls => !cls.registeredMembers?.includes(this.userName));
+      return this.classesForDate.filter(
+        (cls) => !cls.registeredMembers?.includes(this.userName)
+      );
     },
     calendarDecorations() {
       const dateMap = {};
@@ -259,28 +333,36 @@ export default {
       const results = [];
       for (const dateKey in dateMap) {
         const classes = dateMap[dateKey];
-        const userRegistered = classes.some(cls => cls.registeredMembers?.includes(this.userName));
-        const dotColor = userRegistered ? 'red' : 'blue';
+        const userRegistered = classes.some((cls) =>
+          cls.registeredMembers?.includes(this.userName)
+        );
+        const dotColor = userRegistered ? "red" : "blue";
 
         results.push({
-          dates: dateKey + 'T00:00:00',
+          dates: dateKey + "T00:00:00",
           dot: {
             color: dotColor,
-            background: 'white',
-            content: userRegistered ? 'Registered' : '',
+            background: "white",
+            content: userRegistered ? "Registered" : "",
           },
         });
       }
       return results;
-    }
+    },
+    checkInStatus() {
+      return this.$store.state.checkinTimer.checkInStatus;
+    },
+    liveSessionTime() {
+      return this.$store.state.checkinTimer.liveSessionTime;
+    },
   },
   data() {
     return {
       features: [
-        { name: 'View Workout Metrics', route: '/workout-metrics' },
-        { name: 'Profile', route: '/profile' },
-        { name: 'History', route: '/gym-checkin' },
-        { name: 'Logout', route: '/logout' },
+        { name: "View Workout Metrics", route: "/workout-metrics" },
+        { name: "Profile", route: "/profile" },
+        { name: "History", route: "/gym-checkin" },
+        { name: "Logout", route: "/logout" },
       ],
       calendarEvents: [],
       currentDate: null,
@@ -297,15 +379,13 @@ export default {
       showWhichClassToDropPopup: false,
       createClassForDate: null,
       newClass: {
-        name: '',
-        date: '',
-        time: '',
-        instructor: '',
-        duration: '',
-        caloriesBurned: ''
+        name: "",
+        date: "",
+        time: "",
+        instructor: "",
+        duration: "",
+        caloriesBurned: "",
       },
-      checkInStatus: false,
-      liveSessionTime: "00:00:00",
       checkInTime: null,
       timerInterval: null,
     };
@@ -314,24 +394,24 @@ export default {
     // Fetch all classes from the backend
     const token = this.$store.state.token;
     try {
-      const response = await axios.get('/classes', {
-        headers: { Authorization: `Bearer ${token}` }
+      const response = await axios.get("/classes", {
+        headers: { Authorization: `Bearer ${token}` },
       });
       this.calendarEvents = response.data;
     } catch (error) {
-      console.error('Failed to fetch classes', error);
+      console.error("Failed to fetch classes", error);
     }
   },
   methods: {
     async loadClasses() {
       const token = this.$store.state.token;
       try {
-        const response = await axios.get('/classes', {
-          headers: { Authorization: `Bearer ${token}` }
+        const response = await axios.get("/classes", {
+          headers: { Authorization: `Bearer ${token}` },
         });
         this.calendarEvents = response.data;
       } catch (error) {
-        console.error('Failed to fetch classes', error);
+        console.error("Failed to fetch classes", error);
       }
     },
     handleDayClick(day) {
@@ -340,25 +420,31 @@ export default {
       this.fetchClassesForDate(selectedDate);
     },
     async fetchClassesForDate(date) {
-      console.log('User Name:', this.userName);
+      console.log("User Name:", this.userName);
       const token = this.$store.state.token;
       try {
         const response = await axios.get(`/classes/date/${date}`, {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
-        this.calendarEvents = this.calendarEvents.filter(evt => evt.date !== date).concat(response.data);
+        this.calendarEvents = this.calendarEvents
+          .filter((evt) => evt.date !== date)
+          .concat(response.data);
 
         const classesOnDate = this.classesForDate;
-        console.log('User Name:', this.userName);
-        classesOnDate.forEach(cls => {
-          console.log('Class:', cls.name);
-          console.log('Registered Members:', cls.registeredMembers);
-          cls.registeredMembers?.forEach(member => {
+        console.log("User Name:", this.userName);
+        classesOnDate.forEach((cls) => {
+          console.log("Class:", cls.name);
+          console.log("Registered Members:", cls.registeredMembers);
+          cls.registeredMembers?.forEach((member) => {
             console.log(`Comparing "${member}" with "${this.userName}"`);
           });
         });
-        if (classesOnDate.some(cls => cls.registeredMembers?.includes(this.userName))) {
-          console.log('True.')
+        if (
+          classesOnDate.some((cls) =>
+            cls.registeredMembers?.includes(this.userName)
+          )
+        ) {
+          console.log("True.");
         }
 
         if (this.isEmployee) {
@@ -369,18 +455,20 @@ export default {
           }
         } else {
           if (classesOnDate.length > 0) {
-            const isRegistered = classesOnDate.some(cls => cls.registeredMembers?.includes(this.userName));
+            const isRegistered = classesOnDate.some((cls) =>
+              cls.registeredMembers?.includes(this.userName)
+            );
             if (isRegistered) {
               this.showDropClassPopup = true;
             } else {
               this.showRegisterPopup = true;
             }
           } else {
-            console.log('No classes on this date for members.');
+            console.log("No classes on this date for members.");
           }
         }
       } catch (error) {
-        console.error('Failed to fetch classes by date', error);
+        console.error("Failed to fetch classes by date", error);
       }
     },
     openCreateClassPopup(date = null) {
@@ -389,16 +477,20 @@ export default {
         this.newClass.date = date;
       } else {
         this.createClassForDate = null;
-        this.newClass.date = '';
+        this.newClass.date = "";
       }
       this.showCreateClassForm = true;
     },
     async registerForClass(cls) {
       const token = this.$store.state.token;
       try {
-        await axios.post(`/classes/${cls.classId}/register`, {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await axios.post(
+          `/classes/${cls.classId}/register`,
+          {},
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         // Update local state to reflect that the user is now registered
         if (!cls.registeredMembers) {
@@ -408,57 +500,75 @@ export default {
           cls.registeredMembers.push(this.userName);
         }
 
-        console.log('name:' + cls.registeredMembers);
+        console.log("name:" + cls.registeredMembers);
 
         // Now that the user is registered, show the drop class popup immediately
         this.showRegisterPopup = false;
         this.showOtherClassesPopup = false;
         this.showDropClassPopup = true;
-
       } catch (error) {
-        console.error('Failed to register for class', error);
+        console.error("Failed to register for class", error);
       }
     },
     async createClassOnServer() {
       const token = this.$store.state.token;
       try {
-        const response = await axios.post('/classes', this.newClass, {
-          headers: { Authorization: `Bearer ${token}` }
+        const response = await axios.post("/classes", this.newClass, {
+          headers: { Authorization: `Bearer ${token}` },
         });
         const createdClass = response.data;
         this.calendarEvents.push(createdClass);
         this.showCreateClassForm = false;
-        this.newClass = { name: '', date: '', time: '', instructor: '', duration: '', caloriesBurned: '' };
+        this.newClass = {
+          name: "",
+          date: "",
+          time: "",
+          instructor: "",
+          duration: "",
+          caloriesBurned: "",
+        };
       } catch (error) {
-        console.error('Failed to create class', error);
+        console.error("Failed to create class", error);
       }
     },
     async dropClass(cls) {
       const token = this.$store.state.token;
       try {
-        await axios.post(`/classes/${cls.classId}/drop`, {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await axios.post(
+          `/classes/${cls.classId}/drop`,
+          {},
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         if (cls.registeredMembers) {
-          cls.registeredMembers = cls.registeredMembers.filter(m => m !== this.userName);
+          cls.registeredMembers = cls.registeredMembers.filter(
+            (m) => m !== this.userName
+          );
         }
         this.showDropClassPopup = false;
         this.showWhichClassToDropPopup = false;
       } catch (error) {
-        console.error('Failed to drop class', error);
+        console.error("Failed to drop class", error);
       }
     },
     async dropClassFromList(cls) {
       const token = this.$store.state.token;
       try {
-        await axios.post(`/classes/${cls.classId}/drop`, {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await axios.post(
+          `/classes/${cls.classId}/drop`,
+          {},
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         if (cls.registeredMembers) {
-          cls.registeredMembers = cls.registeredMembers.filter(m => m !== this.userName);
+          cls.registeredMembers = cls.registeredMembers.filter(
+            (m) => m !== this.userName
+          );
         }
       } catch (error) {
-        console.error('Failed to drop class from list', error);
+        console.error("Failed to drop class from list", error);
       }
     },
     viewClassInfo(cls, employee = false) {
@@ -473,7 +583,7 @@ export default {
       const token = this.$store.state.token;
       try {
         await axios.delete(`/classes/${cls.classId}`, {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
         const idx = this.calendarEvents.indexOf(cls);
         if (idx !== -1) {
@@ -483,7 +593,7 @@ export default {
           this.showEmployeeDeleteClasses = false;
         }
       } catch (error) {
-        console.error('Failed to delete class', error);
+        console.error("Failed to delete class", error);
       }
     },
     closeAllPopups() {
@@ -498,18 +608,27 @@ export default {
       this.showWhichClassToDropPopup = false;
       this.showCreateClassForm = false;
     },
+
+    async toggleCheckInOut() {
+      if (this.checkInStatus) {
+        await this.checkOut();
+      } else {
+        await this.checkIn();
+      }
+    },
     async fetchCheckInStatus() {
       try {
         const response = await axios.get("/gym-visit/check-in-status", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
-        this.checkInStatus = response.data.checkedIn;
+        const isCheckedIn = response.data.checkedIn;
+        this.$store.commit("checkinTimer/SET_CHECK_IN_STATUS", isCheckedIn);
 
-        if (this.checkInStatus) {
-          this.fetchCheckInTime();
+        if (isCheckedIn) {
+          await this.fetchCheckInTime();
         } else {
-          this.stopLiveTimer();
-          this.liveSessionTime = "00:00:00";
+          this.$store.dispatch("checkinTimer/stopLiveTimer");
+          this.$store.commit("checkinTimer/RESET_TIMER");
         }
       } catch (error) {
         console.error("Error fetching check-in status:", error.message);
@@ -520,39 +639,16 @@ export default {
         const response = await axios.get("/gym-visit/current-session-time", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
-        this.checkInTime = new Date(response.data);
 
-        if (!isNaN(this.checkInTime.getTime())) {
-          this.startLiveTimer();
+        const checkInTime = new Date(response.data);
+        if (!isNaN(checkInTime.getTime())) {
+          this.$store.commit("checkinTimer/SET_CHECK_IN_TIME", checkInTime);
+          this.$store.dispatch("checkinTimer/startLiveTimer");
         } else {
           console.error("Invalid check-in time received:", response.data);
         }
       } catch (error) {
         console.error("Error fetching check-in time:", error.message);
-        this.checkInTime = null;
-      }
-    },
-    startLiveTimer() {
-      this.stopLiveTimer();
-
-      if (!this.checkInTime || isNaN(this.checkInTime.getTime())) {
-        console.error("Cannot start live timer: invalid check-in time.");
-        return;
-      }
-
-      this.timerInterval = setInterval(() => {
-        const now = new Date();
-        const elapsed = Math.floor((now - this.checkInTime) / 1000);
-        const hours = Math.floor(elapsed / 3600).toString().padStart(2, "0");
-        const minutes = Math.floor((elapsed % 3600) / 60).toString().padStart(2, "0");
-        const seconds = (elapsed % 60).toString().padStart(2, "0");
-        this.liveSessionTime = `${hours}:${minutes}:${seconds}`;
-      }, 1000);
-    },
-    stopLiveTimer() {
-      if (this.timerInterval) {
-        clearInterval(this.timerInterval);
-        this.timerInterval = null;
       }
     },
     async checkIn() {
@@ -561,10 +657,13 @@ export default {
           "/gym-visit/check-in",
           {},
           {
-            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
           }
         );
-        this.fetchCheckInStatus();
+        this.$store.commit("checkinTimer/SET_CHECK_IN_STATUS", true);
+        await this.fetchCheckInTime();
       } catch (error) {
         console.error("Error during check-in:", error.message);
       }
@@ -575,28 +674,32 @@ export default {
           "/gym-visit/check-out",
           {},
           {
-            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
           }
         );
-        this.stopLiveTimer();
-        this.fetchCheckInStatus();
+        this.$store.commit("checkinTimer/SET_CHECK_IN_STATUS", false);
+        this.$store.dispatch("checkinTimer/stopLiveTimer");
+        this.$store.commit("checkinTimer/RESET_TIMER");
       } catch (error) {
         console.error("Error during check-out:", error.message);
       }
     },
   },
+
   mounted() {
     this.fetchCheckInStatus();
   },
   beforeDestroy() {
-    this.stopLiveTimer();
+    this.$store.dispatch("checkinTimer/stopLiveTimer");
   },
 };
 </script>
 
 <style scoped>
 body {
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
   margin: 0;
   padding: 0;
 }
@@ -610,13 +713,14 @@ body {
 }
 
 .home::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: url('@/assets/images/background-picture-homepage.jpg') no-repeat center center;
+  background: url("@/assets/images/background-picture-homepage.jpg") no-repeat
+    center center;
   background-size: cover;
   opacity: 0.3;
   z-index: -1;
@@ -624,7 +728,6 @@ body {
 
 .header-bar {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
   background-color: rgba(3, 3, 3, 0.9);
@@ -643,63 +746,49 @@ body {
 .check-in-out-section {
   display: flex;
   align-items: center;
-  flex-grow: 1;
   margin-left: 20px;
+  margin-right: auto;
 }
 
-.check-in-button {
-  background-color: #4caf50;
+.check-in-out-button {
   color: white;
-  border: none;
-  padding: 5px 15px;
+  text-decoration: none;
+  padding: 10px 20px;
   border-radius: 5px;
   font-size: 14px;
-  margin-right: 10px;
+  border: none;
   cursor: pointer;
   transition: background-color 0.3s;
+  margin-right: 20px;
+  background-color: var(--check-in-color);
 }
 
-.check-in-button:disabled {
+.check-in-out-button.check-in {
+  --check-in-color: #4caf50;
+}
+
+.check-in-out-button.check-out {
+  --check-in-color: #f44336;
+}
+
+.check-in:hover {
+  background-color: #5cd65c;
+}
+
+.check-out:hover {
+  background-color: #ff6666;
+}
+
+.check-in-out-button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
 
-.check-in-button:hover:enabled {
-  background-color: #45a049;
-}
-
 .current-session-time {
-  font-size: 14px;
+  font-size: 20px;
   color: #fff;
-  margin: 0 10px;
-  flex-grow: 1;
-  text-align: center;
-}
-
-.check-out-button {
-  background-color: #f44336;
-  color: white;
-  border: none;
-  padding: 5px 15px;
-  border-radius: 5px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.check-out-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.check-out-button:hover:enabled {
-  background-color: #e53935;
-}
-
-.current-session-time {
-  font-size: 14px;
-  color: #fff;
-  margin: 0 10px;
+  margin-left: 10px;
+  white-space: nowrap;
 }
 
 .nav-button,
