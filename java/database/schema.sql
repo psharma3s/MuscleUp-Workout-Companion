@@ -11,7 +11,8 @@ CREATE TABLE users (
     role VARCHAR(50) NOT NULL,
     name VARCHAR(50) NOT NULL,
     email VARCHAR(64),
-    workout_goals VARCHAR(500)
+    workout_goals VARCHAR(500),
+    profile_picture VARCHAR(500);
 );
 
 
