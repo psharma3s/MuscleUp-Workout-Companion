@@ -1,29 +1,52 @@
 <template>
     <div>
-    <!-- Calendar Section -->
-        <div class="calendar-section">
-          <h2>Upcoming Class Schedule</h2>
-          <VCalendar :attributes="calendarDecorations" @dayclick="handleDayClick" />
-          <button v-if="isEmployee" @click="openCreateClassPopup()" class="create-class-button">
-            Create Class
-          </button>
-        </div>
+   <!-- Calendar Section -->
+   <div class="calendar-section">
+      <h2>Upcoming Class Schedule</h2>
 
-        <!-- Member's Registered Classes Section -->
-        <div v-if="!isEmployee && myRegisteredClasses.length > 0" class="registered-classes-section">
-          <h2>My Registered Classes</h2>
-          <ul class="scrollable-list">
-            <li v-for="(cls, idx) in myRegisteredClasses" :key="idx" class="registered-class-item">
-              <h3>{{ cls.name }}</h3>
-              <p><strong>Date:</strong> {{ cls.date }}</p>
-              <p><strong>Time:</strong> {{ cls.time }}</p>
-              <p><strong>Instructor:</strong> {{ cls.instructor }}</p>
-              <p><strong>Duration:</strong> {{ cls.duration }}</p>
-              <button @click="dropClassFromList(cls)">Drop</button>
-            </li>
-          </ul>
-        </div>
+      <VCalendar
+        v-model="selectedDate"
+        :expanded="true"
+        :events="calendarEvents"
+        :attributes="calendarDecorations"
+        @dayclick="handleDayClick"
+      >
+        <template v-slot:day="props">
+          <div
+            class="custom-day"
+            @mouseover="handleMouseOver(props)"
+            @mouseleave="handleMouseLeave"
+            :style="{ height: '120px', textAlign: 'center', display: 'flex', flexDirection: 'column' }"
+          >
+            <div>{{ props.day.date.day }}</div>
+            <div v-if="showEventLabel && currentDate === props.day.date" class="event-label">
+              <!-- Display the events for the day -->
+              <div v-for="event in props.day.events" :key="event.id">
+                {{ event.name }}
+              </div>
+            </div>
+          </div>
+        </template>
+      </VCalendar>
 
+      <button v-if="isEmployee" @click="openCreateClassPopup()" class="create-class-button">
+        Create Class
+      </button>
+    </div>
+    <!-- Member's Registered Classes Section -->
+    <div v-if="!isEmployee && myRegisteredClasses.length > 0" class="registered-classes-section">
+      <h2>My Registered Classes</h2>
+      <ul class="scrollable-list">
+        <li v-for="(cls, idx) in myRegisteredClasses" :key="idx" class="registered-class-item">
+          <h3>{{ cls.name }}</h3>
+          <p><strong>Date:</strong> {{ cls.date }}</p>
+          <p><strong>Time:</strong> {{ cls.time }}</p>
+          <p><strong>Instructor:</strong> {{ cls.instructor }}</p>
+          <p><strong>Duration:</strong> {{ cls.duration }}</p>
+          <button @click="dropClassFromList(cls)">Drop</button>
+        </li>
+      </ul>
+    </div>
         <!-- Employee Day Popup -->
         <div v-if="showEmployeeDayPopup" class="popup-overlay">
           <div class="popup">
@@ -202,6 +225,7 @@ export default {
     },
     data() {
         return {
+            showEventLabel: false,
             currentDate: null,
             selectedClass: {},
             showRegisterPopup: false,
@@ -316,6 +340,16 @@ export default {
             const selectedDate = day.id;
             this.currentDate = selectedDate;
             this.fetchClassesForDate(selectedDate);
+        },
+        handleMouseOver(props) {
+            // Display the event label when hovering over a day
+            this.showEventLabel = true;
+            this.currentDate = props.day.date;
+        },
+
+        handleMouseLeave() {
+            // Hide the event label when mouse leaves the day cell
+            this.showEventLabel = false;
         },
         openCreateClassPopup(date = null) {
             if (date) {
@@ -443,74 +477,163 @@ export default {
 </script>
 
 <style scoped>
-/* Move the styles you had for calendar sections here */
+
+/* Calendar Section */
 .calendar-section {
-    margin: 30px auto;
-    max-width: 800px;
-    text-align: center;
-    position: relative;
-    z-index: 1;
+  margin: 40px auto;
+  max-width: 20%; /* Increased width for better visibility */
+  max-height: 100%;
+  text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
+/* Calendar Cells */
+.vc-container {
+  background-color: #5674a1 !important;  /* Calendar background color */
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Calendar Header Styling (Month/Year) */
+.vc-header {
+  background-color: #007bff !important;  /* Change header background color */
+  color: white !important;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 1.3rem;
+}
+
+/* Styling for individual days in the calendar */
+.vc-day {
+  background-color: #ffffff !important;  /* Set default day background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  height: 80px;
+  width: 80px;
+}
+
+/* Hover effect for day cells */
+.vc-day:hover {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+  transform: scale(1.05);
+}
+
+/* Day numbers size */
+.vc-day-number {
+  font-size: 1.6rem !important; /* Increase the font size for the day numbers */
+  font-weight: bold;
+  color: #333;
+}
+
+/* Highlight selected day */
+.vc-day.selected {
+  background-color: #007bff !important;
+  color: white;
+}
+
+/* Event styling */
+.vc-event {
+  background-color: #28a745 !important;  /* Event background color */
+  color: white;
+  padding: 6px 10px;
+  border-radius: 5px;
+  font-size: 1.1rem;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+/* Hover effect for events */
+.vc-event:hover {
+  background-color: #218838 !important;
+}
+
+/* Styling for event labels */
+.event-label {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  color: white;
+  padding: 8px;
+  border-radius: 5px;
+  font-size: 1rem;
+  z-index: 10;
+  margin-top: 8px;
+  display: none;
+}
+
+/* Pop-up buttons */
 .create-class-button {
-    margin-top: 10px;
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+  margin-top: 20px;
+  padding: 12px 25px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.registered-classes-section {
-    margin: 20px auto;
-    max-width: 800px;
-    text-align: left;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 20px;
-    border-radius: 5px;
+.create-class-button:hover {
+  background-color: #0056b3;
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3);
 }
 
-.registered-classes-section h2 {
-    margin-top: 0;
-}
-
-.registered-class-item {
-    border-bottom: 1px solid #ccc;
-    padding: 10px 0;
-}
-
+/* Pop-up styling */
 .popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
 }
 
 .popup {
-    background: white;
-    padding: 10px;
-    text-align: center;
-    max-width: 400px;
-}
-
-.scrollable-list {
-    max-height: 200px;
-    overflow-y: auto;
+  background: #fff;
+  padding: 20px;
+  max-width: 500px;
+  width: 90%;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
+  animation: popupFadeIn 0.5s ease-in-out;
 }
 
 .popup button {
-    margin: 10px 5px;
-    padding: 10px;
+  margin: 15px 10px;
+  padding: 12px 25px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.vc-container {
-    z-index: 0;
+.popup button:hover {
+  background-color: #0056b3;
+}
+
+/* Pop-up Fade-in Animation */
+@keyframes popupFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>
