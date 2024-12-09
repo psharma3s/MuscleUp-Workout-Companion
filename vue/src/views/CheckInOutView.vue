@@ -18,20 +18,29 @@
       </div>
     </div>
 
-    <!-- Calendar Grid -->
-    <h3>Check-In History</h3>
-    <div class="calendar-grid">
-      <div
-        v-for="(day, index) in calendarDays"
-        :key="index"
-        class="calendar-cell"
-        :class="{
-          checkedIn: checkInDates.some(
-            (date) => date.toDateString() === day.toDateString()
-          ),
-        }"
-      >
-        {{ day.getDate() }}
+    <!-- Calendar Navigation and Display -->
+    <div class="calendar-section">
+      <h3>Check-In Calendar</h3>
+      <div class="calendar-header">
+        <button @click="prevMonth">Previous</button>
+        <span class="month-label">{{ currentMonthName }} {{ currentYear }}</span>
+        <button @click="nextMonth">Next</button>
+      </div>
+
+      <!-- Days of the Week Labels -->
+      <div class="calendar-grid">
+        <div v-for="(day, index) in weekDays" :key="'label-' + index" class="calendar-label">
+          {{ day }}
+        </div>
+
+        <!-- Calendar Days -->
+        <div
+          v-for="(day, index) in paddedDaysInMonth"
+          :key="'day-' + index"
+          :class="['calendar-cell', { checkedIn: day && isCheckedIn(day) }]"
+        >
+          {{ day ? day.getDate() : '' }}
+        </div>
       </div>
     </div>
   </div>
@@ -44,22 +53,58 @@ export default {
   name: "CheckInOutView",
   data() {
     return {
-      checkInStatus: false, // Check-in state
-      liveSessionTime: "00:00:00", // Timer display (live session time)
-      averageTime: "Loading...", // Average time per visit
-      totalTime: "Loading...", // Total time spent
-      checkInDates: [], // Check-in dates for the calendar
-      calendarDays: this.generateCalendarDays(), // Calendar days for the current month
+      checkInStatus: false,
+      liveSessionTime: "00:00:00",
+      averageTime: "Loading...",
+      totalTime: "Loading...",
+      checkInDates: [],
+      currentMonth: new Date().getMonth(),
+      currentYear: new Date().getFullYear(),
     };
   },
 
   computed: {
     checkInStatus() {
-      return this.$store.state.checkinTimer.checkInStatus;
-    },
-    liveSessionTime() {
-      return this.$store.state.checkinTimer.liveSessionTime;
-    },
+    return this.$store.state.checkinTimer.checkInStatus;
+  },
+  liveSessionTime() {
+    return this.$store.state.checkinTimer.liveSessionTime;
+  },
+
+  // Labels for the days of the week
+  weekDays() {
+    return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  },
+
+  // Days in the current month with padding for alignment
+  paddedDaysInMonth() {
+    const firstDayOfMonth = new Date(this.currentYear, this.currentMonth, 1);
+    const lastDayOfMonth = new Date(this.currentYear, this.currentMonth + 1, 0);
+
+    const days = [];
+
+    // Add nulls for padding before the first day of the month
+    for (let i = 0; i < firstDayOfMonth.getDay(); i++) {
+      days.push(null);
+    }
+
+    // Add the actual days of the month
+    for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
+      days.push(new Date(this.currentYear, this.currentMonth, i));
+    }
+
+    return days;
+  },
+
+  // Display name for the current month
+  currentMonthName() {
+    return new Date(this.currentYear, this.currentMonth).toLocaleString(
+      "default",
+      {
+        month: "long",
+      }
+    );
+  },
   },
 
   methods: {
@@ -134,9 +179,30 @@ export default {
         const response = await axios.get("/gym-visit/check-in-dates", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
-        this.checkInDates = response.data.map((date) => new Date(date));
+        this.checkInDates = response.data.map(
+          (date) => new Date(date).toISOString().split("T")[0]
+        ); // Convert to ISO strings for uniformity
       } catch (error) {
         console.error("Error fetching check-in dates:", error.message);
+      }
+    },
+    isCheckedIn(day) {
+      if (!day) return false; // Skip null padding days
+      const formattedDate = day.toISOString().split("T")[0];
+      return this.checkInDates.includes(formattedDate);
+    },
+    prevMonth() {
+      this.currentMonth--;
+      if (this.currentMonth < 0) {
+        this.currentMonth = 11;
+        this.currentYear--;
+      }
+    },
+    nextMonth() {
+      this.currentMonth++;
+      if (this.currentMonth > 11) {
+        this.currentMonth = 0;
+        this.currentYear++;
       }
     },
     generateCalendarDays() {
@@ -153,6 +219,7 @@ export default {
   },
   mounted() {
     this.fetchCheckInStatus();
+    this.fetchCheckInTime();
     this.fetchAverageTime();
     this.fetchTotalTime();
     this.fetchCheckInDates();
@@ -175,40 +242,127 @@ export default {
   margin: 20px 0;
 }
 
+.status h3 {
+  margin: 5px 0;
+  font-size: 18px;
+  color: #333;
+}
+
 .time-summary {
-  margin-top: 70px;
-  margin-bottom: 70px;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .average-time,
 .total-time {
   margin: 10px 0;
+  font-size: 16px;
+  font-weight: bold;
+  color: #555;
+}
+
+.calendar-section {
+  margin-top: 30px;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.calendar-header button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.calendar-header button:hover {
+  background-color: #0056b3;
+}
+
+.calendar-header .month-label {
+  margin: 0 15px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
 }
 
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 5px;
-  max-width: 300px;
-  margin: 20px auto;
+  max-width: 350px;
+  margin: 0 auto;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fafafa;
 }
 
 .calendar-cell {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 12px;
-  background-color: #f0f0f0;
-  color: #333;
-  cursor: default;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #f8f9fa;
+  color: #555;
 }
 
 .calendar-cell.checkedIn {
-  background-color: #4caf50;
+  background-color: #28a745;
   color: white;
+  font-weight: bold;
+}
+
+.calendar-cell:hover {
+  transform: scale(1.1);
+  border-color: #007bff;
+}
+
+.navigation {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.navigation button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  margin: 0 5px;
+}
+
+.calendar-label {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #555;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.navigation button:hover {
+  background-color: #0056b3;
 }
 </style>

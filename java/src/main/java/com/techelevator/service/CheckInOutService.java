@@ -24,6 +24,9 @@ public class CheckInOutService {
     }
 
     public int checkInUser(int userId) {
+        if (isUserCheckedIn(userId)) {
+            throw new IllegalStateException("User is already checked in.");
+        }
         return jdbcCheckInOutDao.checkIn(userId);
     }
 
