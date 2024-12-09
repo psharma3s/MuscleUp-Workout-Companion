@@ -140,7 +140,7 @@ export default {
         (auth) => auth.name === "ROLE_EMPLOYEE"
       )
     ) {
-      features.push({ name: "EmployeeCheckout", route: "/employee-checkout" });
+      features.push({ name: "Employee Checkout", route: "/employee-checkout" });
     }
 
     // Always add Logout as the last option
