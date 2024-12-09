@@ -11,15 +11,25 @@
 
       <!-- Navigation Buttons (center and right aligned) -->
       <div class="nav-buttons">
-        <router-link to="/" class="nav-button">Home</router-link>
-        <router-link v-for="feature in features" :key="feature.name" :to="feature.route" class="nav-button">
+        <router-link
+          v-for="feature in features"
+          :key="feature.name"
+          :to="feature.route"
+          class="nav-button"
+        >
           {{ feature.name }}
         </router-link>
       </div>
 
       <!-- Check-in Button (right aligned) -->
       <div class="check-in-out-section">
-        <button @click="toggleCheckInOut" :class="[ 'check-in-out-button', checkInStatus ? 'check-out' : 'check-in', ]">
+        <button
+          @click="toggleCheckInOut"
+          :class="[
+            'check-in-out-button',
+            checkInStatus ? 'check-out' : 'check-in',
+          ]"
+        >
           {{ checkInStatus ? "Check Out" : "Check In" }}
         </button>
         <div v-if="checkInStatus" class="current-session-time">
@@ -31,42 +41,60 @@
     <!-- Main Content with Flex Layout -->
     <div class="container">
       <!-- Welcome Box on the Left Side -->
-      <div class="welcome-box w-full md:w-1/3 p-6 bg-white shadow-lg rounded-lg">
+      <div
+        class="welcome-box w-full md:w-1/3 p-6 bg-white shadow-lg rounded-lg"
+      >
         <div class="welcome-message">
-          <h1><span class="highlight">{{ greeting }}</span></h1>
+          <h1>
+            <span class="highlight">{{ greeting }}</span>
+          </h1>
 
-          <p class="text-lg mb-4">Your journey to fitness starts here. Explore, progress, and conquer your goals!</p>
+          <p class="text-lg mb-4">
+            Your journey to fitness starts here. Explore, progress, and conquer
+            your goals!
+          </p>
           <!-- Add more content inside this box as needed -->
-          <p class="text-sm text-gray-600">Explore your workout metrics, schedule, and more.</p>
+          <p class="text-sm text-gray-600">
+            Explore your workout metrics, schedule, and more.
+          </p>
           <!-- Start Workout Button Linking to startworkout Page -->
-      <router-link to="/startworkout" class="start-workout-btn">
-          Start Workout
-        </router-link>
+          <router-link to="/startworkout" class="start-workout-btn">
+            Start Workout
+          </router-link>
         </div>
       </div>
-      
-    
 
       <!-- Calendar Box on the Right Side (Using Flex) -->
-      <div class="calendar-box w-full md:w-2/3 p-6 bg-white shadow-lg rounded-lg">
+      <div
+        class="calendar-box w-full md:w-2/3 p-6 bg-white shadow-lg rounded-lg"
+      >
         <!-- Ensure CalendarSchedule component takes the full width of its container -->
-        <CalendarSchedule :userName="$store.state.user.username" :isEmployee="isEmployee" :token="$store.state.token"
-          :calendarEvents="calendarEvents" @update:calendarEvents="calendarEvents = $event" />
+        <CalendarSchedule
+          :userName="$store.state.user.username"
+          :isEmployee="isEmployee"
+          :token="$store.state.token"
+          :calendarEvents="calendarEvents"
+          @update:calendarEvents="calendarEvents = $event"
+        />
       </div>
     </div>
 
     <!-- Footer Bar with Background Image -->
     <div class="footer-bar">
       <div class="footer-content">
-        <img src="@/assets/icons/footer.png" alt="Footer Image" class="footer-img" />
+        <img
+          src="@/assets/icons/footer.png"
+          alt="Footer Image"
+          class="footer-img"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
-import CalendarSchedule from '@/components/CalendarSchedule.vue';
+import axios from "axios";
+import CalendarSchedule from "@/components/CalendarSchedule.vue";
 
 export default {
   components: {
@@ -74,21 +102,23 @@ export default {
   },
   computed: {
     greeting() {
-    const hours = new Date().getHours();
-    if (hours < 12) return `Good morning, ${this.userName}!`;
-    else if (hours < 18) return `Good afternoon, ${this.userName}!`;
-    else return `Good evening, ${this.userName}!`;
-  },
+      const hours = new Date().getHours();
+      if (hours < 12) return `Good morning, ${this.userName}!`;
+      else if (hours < 18) return `Good afternoon, ${this.userName}!`;
+      else return `Good evening, ${this.userName}!`;
+    },
     userName() {
-      return this.$store.state.user.username || 'User';
+      return this.$store.state.user.username || "User";
     },
     profilePictureUrl() {
       return this.$store.state.user.profilePictureUrl
-        ? `/api${this.$store.state.user.profilePictureUrl}` 
-        : '@/assets/icons/default-profile.png';
+        ? `/api${this.$store.state.user.profilePictureUrl}`
+        : "@/assets/icons/default-profile.png";
     },
     isEmployee() {
-      return this.$store.state.user.authorities?.some(auth => auth.name === 'ROLE_EMPLOYEE');
+      return this.$store.state.user.authorities?.some(
+        (auth) => auth.name === "ROLE_EMPLOYEE"
+      );
     },
     checkInStatus() {
       return this.$store.state.checkinTimer.checkInStatus;
@@ -98,26 +128,39 @@ export default {
     },
   },
   data() {
+    const features = [
+      { name: "View Workout Metrics", route: "/workout-metrics" },
+      { name: "Profile", route: "/profile" },
+      { name: "History", route: "/gym-checkin" },
+    ];
+
+    // Add Employee Checkout dynamically based on role
+    if (
+      this.$store.state.user.authorities?.some(
+        (auth) => auth.name === "ROLE_EMPLOYEE"
+      )
+    ) {
+      features.push({ name: "EmployeeCheckout", route: "/employee-checkout" });
+    }
+
+    // Always add Logout as the last option
+    features.push({ name: "Logout", route: "/logout" });
+
     return {
-      features: [
-        { name: 'View Workout Metrics', route: '/workout-metrics' },
-        { name: 'Profile', route: '/profile' },
-        { name: 'History', route: '/gym-checkin' },
-        { name: 'Logout', route: '/logout' },
-      ],
+      features,
       calendarEvents: [],
     };
   },
   async mounted() {
     const token = this.$store.state.token;
     try {
-      const response = await axios.get('/classes', {
+      const response = await axios.get("/classes", {
         headers: { Authorization: `Bearer ${token}` },
       });
       this.calendarEvents = response.data;
       this.fetchCheckInStatus();
     } catch (error) {
-      console.error('Failed to fetch classes', error);
+      console.error("Failed to fetch classes", error);
     }
   },
   methods: {
@@ -130,68 +173,79 @@ export default {
     },
     async fetchCheckInStatus() {
       try {
-        const response = await axios.get('/gym-visit/check-in-status', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        const response = await axios.get("/gym-visit/check-in-status", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         const isCheckedIn = response.data.checkedIn;
-        this.$store.commit('checkinTimer/SET_CHECK_IN_STATUS', isCheckedIn);
+        this.$store.commit("checkinTimer/SET_CHECK_IN_STATUS", isCheckedIn);
 
         if (isCheckedIn) {
           await this.fetchCheckInTime();
         } else {
-          this.$store.dispatch('checkinTimer/stopLiveTimer');
-          this.$store.commit('checkinTimer/RESET_TIMER');
+          this.$store.dispatch("checkinTimer/stopLiveTimer");
+          this.$store.commit("checkinTimer/RESET_TIMER");
         }
       } catch (error) {
-        console.error('Error fetching check-in status:', error.message);
+        console.error("Error fetching check-in status:", error.message);
       }
     },
     async fetchCheckInTime() {
       try {
-        const response = await axios.get('/gym-visit/current-session-time', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        const response = await axios.get("/gym-visit/current-session-time", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         const checkInTime = new Date(response.data);
         if (!isNaN(checkInTime.getTime())) {
-          this.$store.commit('checkinTimer/SET_CHECK_IN_TIME', checkInTime);
-          this.$store.dispatch('checkinTimer/startLiveTimer');
+          this.$store.commit("checkinTimer/SET_CHECK_IN_TIME", checkInTime);
+          this.$store.dispatch("checkinTimer/startLiveTimer");
         } else {
-          console.error('Invalid check-in time received:', response.data);
+          console.error("Invalid check-in time received:", response.data);
         }
       } catch (error) {
-        console.error('Error fetching check-in time:', error.message);
+        console.error("Error fetching check-in time:", error.message);
       }
     },
     async checkIn() {
       try {
-        await axios.post('/gym-visit/check-in', {}, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        });
-        this.$store.commit('checkinTimer/SET_CHECK_IN_STATUS', true);
+        await axios.post(
+          "/gym-visit/check-in",
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        this.$store.commit("checkinTimer/SET_CHECK_IN_STATUS", true);
         await this.fetchCheckInTime();
       } catch (error) {
-        console.error('Error during check-in:', error.message);
+        console.error("Error during check-in:", error.message);
       }
     },
     async checkOut() {
       try {
-        await axios.post('/gym-visit/check-out', {}, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        });
-        this.$store.commit('checkinTimer/SET_CHECK_IN_STATUS', false);
-        this.$store.dispatch('checkinTimer/stopLiveTimer');
-        this.$store.commit('checkinTimer/RESET_TIMER');
+        await axios.post(
+          "/gym-visit/check-out",
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        this.$store.commit("checkinTimer/SET_CHECK_IN_STATUS", false);
+        this.$store.dispatch("checkinTimer/stopLiveTimer");
+        this.$store.commit("checkinTimer/RESET_TIMER");
       } catch (error) {
-        console.error('Error during check-out:', error.message);
+        console.error("Error during check-out:", error.message);
       }
     },
   },
 };
 </script>
 <style scoped>
-
 body {
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
   margin: 0;
   padding: 0;
 }
@@ -202,7 +256,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 10px 20px;
-  background-image: url('@/assets/icons/header.png');
+  background-image: url("@/assets/icons/header.png");
   background-size: cover;
   background-position: center;
 }
@@ -312,7 +366,7 @@ body {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 20px;
   border-radius: 8px;
-  width: 100%;  /* Ensure it takes full width */
+  width: 100%; /* Ensure it takes full width */
   box-sizing: border-box;
 }
 
@@ -353,7 +407,7 @@ body {
   padding: 20px;
   border-radius: 8px;
   margin-top: 20px;
-  width: 100%;  
+  width: 100%;
   box-sizing: border-box;
 }
 
@@ -363,22 +417,21 @@ body {
   justify-content: space-between; /* Space between the two boxes */
   gap: 20px; /* Space between boxes */
   padding: 20px;
-  flex-wrap: wrap;  /* Allow wrapping if needed */
-  
+  flex-wrap: wrap; /* Allow wrapping if needed */
 }
 
 .container .welcome-box {
-  flex: 1 1 30%;  /* Welcome box takes 30% of available space */
+  flex: 1 1 30%; /* Welcome box takes 30% of available space */
 }
 
 .container .calendar-box {
-  flex: 1 1 65%;  /* Calendar box takes 65% of available space */
+  flex: 1 1 65%; /* Calendar box takes 65% of available space */
 }
 
 /* Footer Bar */
 .footer-bar {
   margin-top: 100px;
-  background-image: url('@/assets/icons/footer.png');
+  background-image: url("@/assets/icons/footer.png");
   background-size: cover;
   background-position: center;
   padding: 10px 0;
@@ -397,12 +450,12 @@ body {
 /* Responsiveness (Mobile) */
 @media (max-width: 768px) {
   .container {
-    flex-direction: column;  /* Stacks vertically on mobile */
+    flex-direction: column; /* Stacks vertically on mobile */
   }
 
   .container .welcome-box,
   .container .calendar-box {
-    flex: 1 1 100%;  /* Make both take full width on mobile */
+    flex: 1 1 100%; /* Make both take full width on mobile */
   }
 }
 </style>

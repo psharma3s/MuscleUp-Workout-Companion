@@ -12,6 +12,7 @@ import WorkoutMetrics from '../views/WorkoutMetrics.vue';
 import CheckInOutView from "../views/CheckInOutView.vue";
 import StartExercise from "../views/StartExerciseView.vue";
 import ProfileView from '../views/ProfileView.vue';
+import EmployeeCheckoutView from '../views/EmployeeCheckoutView.vue';
 /**
  * The Vue Router is used to "direct" the browser to render a specific view component
  * inside of App.vue depending on the URL.
@@ -88,6 +89,12 @@ const routes = [
     name: 'Profile',
     component: ProfileView,
     meta: { requiresAuth: true },
+  },
+  {
+    path: '/employee-checkout',
+  name: 'EmployeeCheckout',
+  component: EmployeeCheckoutView,
+  meta: { requiresAuth: true, requiresRole: 'ROLE_EMPLOYEE' },
   },
 ];
 
