@@ -38,8 +38,14 @@
           <p class="text-lg mb-4">Your journey to fitness starts here. Explore, progress, and conquer your goals!</p>
           <!-- Add more content inside this box as needed -->
           <p class="text-sm text-gray-600">Explore your workout metrics, schedule, and more.</p>
+          <!-- Start Workout Button Linking to startworkout Page -->
+      <router-link to="/startworkout" class="start-workout-btn">
+          Start Workout
+        </router-link>
         </div>
       </div>
+      
+    
 
       <!-- Calendar Box on the Right Side (Using Flex) -->
       <div class="calendar-box w-full md:w-2/3 p-6 bg-white shadow-lg rounded-lg">
@@ -322,6 +328,21 @@ body {
 
 .welcome-message p {
   font-size: 1.2rem;
+}
+.start-workout-btn {
+  display: inline-block;
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.start-workout-btn:hover {
+  background-color: #0056b3;
 }
 
 /* Calendar Box Styling */
