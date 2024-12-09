@@ -54,13 +54,13 @@ export default {
   },
 
   computed: {
-  checkInStatus() {
-    return this.$store.state.checkinTimer.checkInStatus;
+    checkInStatus() {
+      return this.$store.state.checkinTimer.checkInStatus;
+    },
+    liveSessionTime() {
+      return this.$store.state.checkinTimer.liveSessionTime;
+    },
   },
-  liveSessionTime() {
-    return this.$store.state.checkinTimer.liveSessionTime;
-  },
-},
 
   methods: {
     async fetchCheckInStatus() {
@@ -98,8 +98,12 @@ export default {
     updateLiveSessionTime(checkInTime) {
       const now = new Date();
       const elapsed = Math.floor((now - checkInTime) / 1000);
-      const hours = Math.floor(elapsed / 3600).toString().padStart(2, "0");
-      const minutes = Math.floor((elapsed % 3600) / 60).toString().padStart(2, "0");
+      const hours = Math.floor(elapsed / 3600)
+        .toString()
+        .padStart(2, "0");
+      const minutes = Math.floor((elapsed % 3600) / 60)
+        .toString()
+        .padStart(2, "0");
       const seconds = (elapsed % 60).toString().padStart(2, "0");
       this.liveSessionTime = `${hours}:${minutes}:${seconds}`;
     },
@@ -152,6 +156,11 @@ export default {
     this.fetchAverageTime();
     this.fetchTotalTime();
     this.fetchCheckInDates();
+    this.$store.dispatch("checkinTimer/initializeCheckInStatus").then(() => {
+      if (this.$store.state.checkinTimer.checkInStatus) {
+        this.$store.dispatch("checkinTimer/startLiveTimer");
+      }
+    });
   },
 };
 </script>

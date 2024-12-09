@@ -85,17 +85,14 @@ public class CheckInOutService {
                 LocalDateTime checkInTime = visit.getCheckInTime();
                 LocalDateTime checkOutTime = visit.getCheckOutTime();
 
-                long days = checkOutTime.toLocalDate().toEpochDay() - checkInTime.toLocalDate().toEpochDay();
-                long hours = checkOutTime.getHour() - checkInTime.getHour();
-                long minutes = checkOutTime.getMinute() - checkInTime.getMinute();
-
-                totalMinutes += days * 24 * 60 + hours * 60 + minutes;
+                totalMinutes += Duration.between(checkInTime, checkOutTime).toMinutes();
             }
         }
 
         long days = totalMinutes / (24 * 60);
-        long hours = totalMinutes / 60;
-        long minutes = totalMinutes % 60;
+        long remainingMinutes = totalMinutes % (24 * 60);
+        long hours = remainingMinutes / 60;
+        long minutes = remainingMinutes % 60;
 
         return String.format("%d days, %d hours, %d minutes", days, hours, minutes);
     }
