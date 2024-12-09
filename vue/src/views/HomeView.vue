@@ -28,27 +28,27 @@
       </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="home-header">
-      <div class="profile-section">
+    <!-- Main Content with Flex Layout -->
+    <div class="container">
+      <!-- Welcome Box on the Left Side -->
+      <div class="welcome-box w-full md:w-1/3 p-6 bg-white shadow-lg rounded-lg">
         <div class="welcome-message">
-          <h1>Welcome, <span class="highlight">{{ userName }}</span>!</h1>
-          <p>Your journey to fitness starts here. Explore, progress, and conquer your goals!</p>
+          <h1><span class="highlight">{{ greeting }}</span></h1>
+
+          <p class="text-lg mb-4">Your journey to fitness starts here. Explore, progress, and conquer your goals!</p>
+          <!-- Add more content inside this box as needed -->
+          <p class="text-sm text-gray-600">Explore your workout metrics, schedule, and more.</p>
         </div>
+      </div>
+
+      <!-- Calendar Box on the Right Side (Using Flex) -->
+      <div class="calendar-box w-full md:w-2/3 p-6 bg-white shadow-lg rounded-lg">
+        <!-- Ensure CalendarSchedule component takes the full width of its container -->
+        <CalendarSchedule :userName="$store.state.user.username" :isEmployee="isEmployee" :token="$store.state.token"
+          :calendarEvents="calendarEvents" @update:calendarEvents="calendarEvents = $event" />
       </div>
     </div>
 
-    <!-- Start Workout Button -->
-    <div class="start-workout-section">
-      <router-link to="/startworkout" class="start-workout-button">
-        Start Workout
-      </router-link>
-    </div>
-
-    <!-- Replaced Calendar and Classes Code with the new component -->
-    <CalendarSchedule :userName="$store.state.user.username" :isEmployee="isEmployee" :token="$store.state.token"
-      :calendarEvents="calendarEvents" @update:calendarEvents="calendarEvents = $event" />
-    
     <!-- Footer Bar with Background Image -->
     <div class="footer-bar">
       <div class="footer-content">
@@ -67,6 +67,12 @@ export default {
     CalendarSchedule,
   },
   computed: {
+    greeting() {
+    const hours = new Date().getHours();
+    if (hours < 12) return `Good morning, ${this.userName}!`;
+    else if (hours < 18) return `Good afternoon, ${this.userName}!`;
+    else return `Good evening, ${this.userName}!`;
+  },
     userName() {
       return this.$store.state.user.username || 'User';
     },
@@ -176,14 +182,15 @@ export default {
   },
 };
 </script>
-
 <style scoped>
+
 body {
   font-family: 'Arial', sans-serif;
   margin: 0;
   padding: 0;
 }
 
+/* Header Bar */
 .header-bar {
   display: flex;
   align-items: center;
@@ -210,7 +217,6 @@ body {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  
 }
 
 .nav-button,
@@ -229,6 +235,7 @@ body {
   background-color: #777;
 }
 
+/* Check-in Button Section */
 .check-in-out-section {
   display: flex;
   align-items: center;
@@ -282,55 +289,78 @@ body {
   font-weight: bold;
 }
 
+/* Main Header and Welcome Box */
 .home-header {
   display: flex;
   justify-content: center;
   align-items: center;
   margin-top: 10px;
   text-align: center;
+  padding: 10px;
 }
 
-.welcome-message {
-  max-width: 800px;
-  margin-top: 0;
-  text-align: center;
-  font-size: 1.8rem;
+/* Welcome Box Styling */
+.welcome-box {
+  background-color: #f3f2f2e7;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border-radius: 8px;
+  width: 100%;  /* Ensure it takes full width */
+  box-sizing: border-box;
+}
+
+.welcome-message h1 {
+  color: #333;
 }
 
 .welcome-message .highlight {
-  color: #ff6f61;
+  color: #ff6f61; /* Accent color for username */
   font-weight: bold;
-  font-size: 4rem;
+  font-size: 2rem;
 }
 
-.start-workout-section {
-  text-align: center;
-  margin: 30px 0;
-}
-
-.start-workout-button {
-  display: inline-block;
-  background-color: #28a745;
-  color: white;
-  padding: 15px 30px;
+.welcome-message p {
   font-size: 1.2rem;
-  border-radius: 5px;
-  text-decoration: none;
-  transition: background-color 0.3s;
 }
 
-.start-workout-button:hover {
-  background-color: #218838;
+/* Calendar Box Styling */
+.calendar-box {
+  background-color: #f9f9f9be;
+  border: 1px solid #ebe4e4cc;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
+  width: 100%;  
+  box-sizing: border-box;
 }
 
-/* Footer Bar Styling */
+/* Flex Layout for Main Sections (Welcome Box and Calendar) */
+.container {
+  display: flex; /* Ensure horizontal layout */
+  justify-content: space-between; /* Space between the two boxes */
+  gap: 20px; /* Space between boxes */
+  padding: 20px;
+  flex-wrap: wrap;  /* Allow wrapping if needed */
+  
+}
+
+.container .welcome-box {
+  flex: 1 1 30%;  /* Welcome box takes 30% of available space */
+}
+
+.container .calendar-box {
+  flex: 1 1 65%;  /* Calendar box takes 65% of available space */
+}
+
+/* Footer Bar */
 .footer-bar {
-  margin-bottom: 0;
+  margin-top: 100px;
   background-image: url('@/assets/icons/footer.png');
   background-size: cover;
   background-position: center;
   padding: 10px 0;
-  margin-top: auto;
 }
 
 .footer-content {
@@ -341,5 +371,17 @@ body {
   width: 100%;
   height: auto;
   max-height: 100px;
+}
+
+/* Responsiveness (Mobile) */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;  /* Stacks vertically on mobile */
+  }
+
+  .container .welcome-box,
+  .container .calendar-box {
+    flex: 1 1 100%;  /* Make both take full width on mobile */
+  }
 }
 </style>

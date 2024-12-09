@@ -1,6 +1,6 @@
 <template>
   <div id="capstone-app">
-    <!-- Background Image Applied to All Pages Except Login and Register -->
+   
     <div v-if="$route.name !== 'login' && $route.name !== 'register'" class="background-image"></div>
 
     <!-- Header Bar: Logo and Navigation -->
@@ -9,7 +9,8 @@
         <router-link to="/" class="logo-link">
           <img src="@/assets/images/logo.jpg" alt="Logo" class="logo" />
         </router-link>
-        <div class="nav-buttons">
+        <!-- Navigation Links Visible Only on Home Page -->
+        <div v-if="$route.name === 'home'" class="nav-buttons">
           <router-link to="/" class="nav-button">Home</router-link>
           <router-link v-for="feature in features" :key="feature.name" :to="feature.route" class="nav-button">
             {{ feature.name }}
@@ -65,7 +66,7 @@ export default {
   height: 100%;
   background: url('@/assets/images/background-picture-homepage.jpg') no-repeat center center;
   background-size: cover;
-  opacity: 0.2; /* Adjust opacity of the background */
+  opacity: 0.7; /* Adjust opacity of the background */
   z-index: -1; /* Ensure it's behind all content */
 }
 
@@ -111,7 +112,6 @@ export default {
 /* Footer Bar Styling */
 .footer-bar {
   margin-bottom: 0;
-  /* background-image: url('@/assets/icons/footer.png'); */
   background-size: cover;
   background-position: center;
   padding: 10px 0;
