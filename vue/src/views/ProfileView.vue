@@ -3,7 +3,7 @@
     <!-- Sidebar Navigation -->
     <div class="sidebar">
       <div class="profile-picture-container">
-        <img :src="user.profilePictureUrl || require('@/assets/icons/default-profile.png')" 
+        <img :src="user.profilePictureUrl || ('src/assets/icons/default-profile.png')" 
              alt="Profile Picture" class="profile-image" />
         <h2>{{ user.username }}</h2>
         <router-link to="/edit-profile" class="edit-profile-button">Edit Profile</router-link>
