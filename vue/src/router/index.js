@@ -98,6 +98,18 @@ const routes = [
   meta: { requiresAuth: true, requiresRole: 'ROLE_EMPLOYEE' },
   },
   {
+    path: "/history/:userId",
+    name: "UserHistory",
+    component: CheckInOutView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/workout-metrics/:userId",
+    name: "UserMetrics",
+    component: WorkoutMetrics,
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/equipmentuse',
     name: 'Equipment Usage',
     component: EmployeeEquipmentUsage,

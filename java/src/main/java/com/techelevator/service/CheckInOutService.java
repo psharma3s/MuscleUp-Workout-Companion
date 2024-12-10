@@ -1,7 +1,9 @@
 package com.techelevator.service;
 
+import com.techelevator.dao.CheckInOutDao;
 import com.techelevator.dao.JdbcCheckInOutDao;
 import com.techelevator.model.CheckInOut;
+import com.techelevator.model.UserCheckInStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,46 +14,47 @@ import java.util.List;
 
 @Service
 public class CheckInOutService {
-    private final JdbcCheckInOutDao jdbcCheckInOutDao;
+
+    private final CheckInOutDao checkInOutDao; // Use the interface instead of implementation
 
     @Autowired
-    public CheckInOutService(JdbcCheckInOutDao jdbcCheckInOutDao) {
-        this.jdbcCheckInOutDao = jdbcCheckInOutDao;
+    public CheckInOutService(CheckInOutDao checkInOutDao) {
+        this.checkInOutDao = checkInOutDao;
     }
 
     public int getUserIdByUsername(String username) {
-        return jdbcCheckInOutDao.findUserIdByUsername(username);
+        return checkInOutDao.findUserIdByUsername(username);
     }
 
-    public int checkInUser(int userId) {
-        if (isUserCheckedIn(userId)) {
+    public void checkInUser(int userId) {
+        if (checkInOutDao.isUserCheckedIn(userId)) {
             throw new IllegalStateException("User is already checked in.");
         }
-        return jdbcCheckInOutDao.checkIn(userId);
+        checkInOutDao.checkIn(userId);
     }
 
     public void checkOutUser(int userId) {
-        int visitId = jdbcCheckInOutDao.findOngoingVisitId(userId);
-
-        if (visitId != -1) {
-            jdbcCheckInOutDao.checkOut(visitId);
+        int visitId = checkInOutDao.findOngoingVisitId(userId);
+        if (visitId == -1) {
+            throw new IllegalStateException("No ongoing visit found for user.");
         }
+        checkInOutDao.checkOut(visitId);
     }
 
     public boolean isUserCheckedIn(int userId) {
-        return jdbcCheckInOutDao.isUserCheckedIn(userId);
+        return checkInOutDao.isUserCheckedIn(userId);
     }
 
     public List<LocalDate> getCheckInDates(int userId) {
-        return jdbcCheckInOutDao.getCheckInDates(userId);
+        return checkInOutDao.getCheckInDates(userId);
     }
 
     public LocalDateTime getOngoingCheckInTime(int userId) {
-        return jdbcCheckInOutDao.findOngoingCheckInTime(userId);
+        return checkInOutDao.findOngoingCheckInTime(userId);
     }
 
     public String calculateAverageTime(int userId) {
-        List<CheckInOut> visits = jdbcCheckInOutDao.getUserVisits(userId);
+        List<CheckInOut> visits = checkInOutDao.getUserVisits(userId);
 
         long totalMinutes = 0;
         int count = 0;
@@ -79,7 +82,7 @@ public class CheckInOutService {
     }
 
     public String calculateTotalTime(int userId) {
-        List<CheckInOut> visits = jdbcCheckInOutDao.getUserVisits(userId);
+        List<CheckInOut> visits = checkInOutDao.getUserVisits(userId);
 
         long totalMinutes = 0;
 
@@ -100,4 +103,11 @@ public class CheckInOutService {
         return String.format("%d days, %d hours, %d minutes", days, hours, minutes);
     }
 
+    public List<UserCheckInStatus> getCheckedInUsers() {
+        return checkInOutDao.getCheckedInUsers(); // Call the method for all users
+    }
+
+    public List<CheckInOut> getUserVisits(int userId) {
+        return checkInOutDao.getUserVisits(userId); // DAO method implementation
+    }
 }

@@ -23,13 +23,19 @@
       <h3>Check-In Calendar</h3>
       <div class="calendar-header">
         <button @click="prevMonth">Previous</button>
-        <span class="month-label">{{ currentMonthName }} {{ currentYear }}</span>
+        <span class="month-label"
+          >{{ currentMonthName }} {{ currentYear }}</span
+        >
         <button @click="nextMonth">Next</button>
       </div>
 
       <!-- Days of the Week Labels -->
       <div class="calendar-grid">
-        <div v-for="(day, index) in weekDays" :key="'label-' + index" class="calendar-label">
+        <div
+          v-for="(day, index) in weekDays"
+          :key="'label-' + index"
+          class="calendar-label"
+        >
           {{ day }}
         </div>
 
@@ -39,7 +45,7 @@
           :key="'day-' + index"
           :class="['calendar-cell', { checkedIn: day && isCheckedIn(day) }]"
         >
-          {{ day ? day.getDate() : '' }}
+          {{ day ? day.getDate() : "" }}
         </div>
       </div>
     </div>
@@ -54,7 +60,6 @@ export default {
   data() {
     return {
       checkInStatus: false,
-      liveSessionTime: "00:00:00",
       averageTime: "Loading...",
       totalTime: "Loading...",
       checkInDates: [],
@@ -65,46 +70,62 @@ export default {
 
   computed: {
     checkInStatus() {
-    return this.$store.state.checkinTimer.checkInStatus;
-  },
-  liveSessionTime() {
-    return this.$store.state.checkinTimer.liveSessionTime;
-  },
+      return this.$store.state.checkinTimer.checkInStatus;
+    },
+    liveSessionTime() {
+      return this.$store.state.checkinTimer.liveSessionTime;
+    },
 
-  // Labels for the days of the week
-  weekDays() {
-    return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  },
+    weekDays() {
+      return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    },
 
-  // Days in the current month with padding for alignment
-  paddedDaysInMonth() {
-    const firstDayOfMonth = new Date(this.currentYear, this.currentMonth, 1);
-    const lastDayOfMonth = new Date(this.currentYear, this.currentMonth + 1, 0);
+    paddedDaysInMonth() {
+      const firstDayOfMonth = new Date(this.currentYear, this.currentMonth, 1);
+      const lastDayOfMonth = new Date(
+        this.currentYear,
+        this.currentMonth + 1,
+        0
+      );
 
-    const days = [];
+      const days = [];
 
-    // Add nulls for padding before the first day of the month
-    for (let i = 0; i < firstDayOfMonth.getDay(); i++) {
-      days.push(null);
-    }
-
-    // Add the actual days of the month
-    for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
-      days.push(new Date(this.currentYear, this.currentMonth, i));
-    }
-
-    return days;
-  },
-
-  // Display name for the current month
-  currentMonthName() {
-    return new Date(this.currentYear, this.currentMonth).toLocaleString(
-      "default",
-      {
-        month: "long",
+      for (let i = 0; i < firstDayOfMonth.getDay(); i++) {
+        days.push(null);
       }
-    );
-  },
+
+      for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
+        days.push(new Date(this.currentYear, this.currentMonth, i));
+      }
+
+      return days;
+    },
+
+    currentMonthName() {
+      return new Date(this.currentYear, this.currentMonth).toLocaleString(
+        "default",
+        {
+          month: "long",
+        }
+      );
+    },
+
+    mounted() {
+      const userId = this.$route.params.userId;
+      if (userId) {
+        console.log(`Loading history for user ${userId}`);
+        this.fetchUserHistory(userId);
+      } else {
+        console.error("No userId provided in the route.");
+      }
+    },
+    beforeRouteUpdate(to, from, next) {
+      const newUserId = to.params.userId;
+      if (newUserId !== this.$route.params.userId) {
+        this.fetchUserData(newUserId);
+      }
+      next();
+    },
   },
 
   methods: {
@@ -130,11 +151,11 @@ export default {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         const checkInTime = new Date(response.data);
-
         if (!isNaN(checkInTime.getTime())) {
           this.updateLiveSessionTime(checkInTime);
         } else {
-          console.error("Invalid check-in time received:", response.data);
+          console.warn("Invalid check-in time received:", response.data);
+          this.liveSessionTime = "Not Checked In";
         }
       } catch (error) {
         console.error("Error fetching check-in time:", error.message);
@@ -181,13 +202,13 @@ export default {
         });
         this.checkInDates = response.data.map(
           (date) => new Date(date).toISOString().split("T")[0]
-        ); // Convert to ISO strings for uniformity
+        );
       } catch (error) {
         console.error("Error fetching check-in dates:", error.message);
       }
     },
     isCheckedIn(day) {
-      if (!day) return false; // Skip null padding days
+      if (!day) return false;
       const formattedDate = day.toISOString().split("T")[0];
       return this.checkInDates.includes(formattedDate);
     },
@@ -216,6 +237,21 @@ export default {
       }
       return days;
     },
+
+    async fetchUserHistory(userId) {
+      try {
+        const response = await axios.get(`/gym-visit/history/${userId}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        this.history = response.data;
+      } catch (error) {
+        console.error(
+          `Error fetching history for user ${userId}:`,
+          error.message
+        );
+        alert("Failed to load user history.");
+      }
+    },
   },
   mounted() {
     this.fetchCheckInStatus();
@@ -228,6 +264,13 @@ export default {
         this.$store.dispatch("checkinTimer/startLiveTimer");
       }
     });
+    const userId = this.$route.params.userId;
+    if (userId) {
+      console.log(`Loading history for user ${userId}`);
+      this.fetchUserHistory(userId);
+    } else {
+      console.error("No userId provided in the route.");
+    }
   },
 };
 </script>

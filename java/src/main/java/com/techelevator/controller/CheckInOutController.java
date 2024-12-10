@@ -1,5 +1,6 @@
 package com.techelevator.controller;
 
+import com.techelevator.model.UserCheckInStatus;
 import com.techelevator.service.CheckInOutService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -97,5 +98,23 @@ public class CheckInOutController {
 
         List<LocalDate> checkInDates = checkInOutService.getCheckInDates(userId);
         return ResponseEntity.ok(checkInDates);
+    }
+
+    @GetMapping("/checked-in-users")
+    public ResponseEntity<List<UserCheckInStatus>> getCheckedInUsers() {
+        List<UserCheckInStatus> users = checkInOutService.getCheckedInUsers();
+        return ResponseEntity.ok(users);
+    }
+
+    @PostMapping("/{userId}/checkout")
+    public ResponseEntity<Void> checkOutUser(@PathVariable int userId) {
+        checkInOutService.checkOutUser(userId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{userId}/checkin")
+    public ResponseEntity<Void> checkInUser(@PathVariable int userId) {
+        checkInOutService.checkInUser(userId);
+        return ResponseEntity.ok().build();
     }
 }

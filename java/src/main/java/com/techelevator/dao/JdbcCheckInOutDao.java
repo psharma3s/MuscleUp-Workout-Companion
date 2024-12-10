@@ -1,6 +1,7 @@
 package com.techelevator.dao;
 
 import com.techelevator.model.CheckInOut;
+import com.techelevator.model.UserCheckInStatus;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -19,14 +20,19 @@ public class JdbcCheckInOutDao implements CheckInOutDao {
 
     @Override
     public int checkIn(int userId) {
-        String sql = "INSERT INTO user_gym_visits (user_id, check_in_time) VALUES (?, ?) RETURNING visit_id";
-        return jdbcTemplate.queryForObject(sql, Integer.class, userId, LocalDateTime.now());
+        String sql = "INSERT INTO user_gym_visits (user_id, check_in_time, visit_status) " +
+                "VALUES (?, CURRENT_TIMESTAMP, 'Checked In') RETURNING visit_id";
+        return jdbcTemplate.queryForObject(sql, Integer.class, userId);
     }
 
     @Override
     public void checkOut(int visitId) {
-        String sql = "UPDATE user_gym_visits SET check_out_time = ? WHERE visit_id = ?";
-        jdbcTemplate.update(sql, LocalDateTime.now(), visitId);
+        String sql = "UPDATE user_gym_visits " +
+                "SET check_out_time = CURRENT_TIMESTAMP, " +
+                "    visit_status = 'Checked Out', " +
+                "    visit_duration_minutes = EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - check_in_time)) / 60 " +
+                "WHERE visit_id = ?";
+        jdbcTemplate.update(sql, visitId);
     }
 
     @Override
@@ -82,5 +88,25 @@ public class JdbcCheckInOutDao implements CheckInOutDao {
     public int getClassesAttendedByUserId(int userId) {
         String sql = "SELECT COUNT(*) FROM class_event WHERE user_id = ?";  // Adjust the query based on your schema
         return jdbcTemplate.queryForObject(sql, Integer.class, userId);  // Returns the number of classes attended
+    }
+    @Override
+    public List<UserCheckInStatus> getCheckedInUsers() {
+        String sql = "SELECT DISTINCT ON (u.user_id) u.user_id, u.username, " +
+                "v.check_in_time AS lastCheckIn, " +
+                "v.check_out_time AS lastCheckOut, " +
+                "v.visit_status AS status " +
+                "FROM users u " +
+                "JOIN user_gym_visits v ON u.user_id = v.user_id " +
+                "ORDER BY u.user_id, v.check_in_time DESC";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            UserCheckInStatus user = new UserCheckInStatus();
+            user.setUserId(rs.getInt("user_id"));
+            user.setUsername(rs.getString("username"));
+            user.setLastCheckIn(rs.getTimestamp("lastCheckIn") != null ? rs.getTimestamp("lastCheckIn").toLocalDateTime() : null);
+            user.setLastCheckOut(rs.getTimestamp("lastCheckOut") != null ? rs.getTimestamp("lastCheckOut").toLocalDateTime() : null);
+            user.setCheckedIn(rs.getString("status").equalsIgnoreCase("Checked In"));
+            return user;
+        });
     }
 }

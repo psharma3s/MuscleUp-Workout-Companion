@@ -7,6 +7,7 @@ public class CheckInOut {
     private int userId;
     private LocalDateTime checkInTime;
     private LocalDateTime checkOutTime;
+    private String visitStatus;
 
     public int getVisitId() {
         return visitId;
@@ -38,5 +39,12 @@ public class CheckInOut {
 
     public void setCheckOutTime(LocalDateTime checkOutTime) {
         this.checkOutTime = checkOutTime;
+    }
+
+    public String getVisitStatus() {
+        return visitStatus;
+    }
+    public void setVisitStatus(String visitStatus) {
+        this.visitStatus = visitStatus;
     }
 }
