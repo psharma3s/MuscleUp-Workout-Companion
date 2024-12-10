@@ -54,7 +54,8 @@ export default {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  position: relative;
+  position: fixed;
+  width: 100%;
 }
 
 /* Background Image Styling (For Every Page Except Login and Register) */
@@ -101,12 +102,12 @@ export default {
   text-decoration: none;
   padding: 10px 20px;
   border-radius: 5px;
-  background-color: #555;
+  background-color: #5dd9ff;
   transition: background-color 0.3s;
 }
 
 .nav-button:hover {
-  background-color: #777;
+  background-color: #72b9f3;
 }
 
 /* Footer Bar Styling */
@@ -116,7 +117,7 @@ export default {
   background-position: center;
   padding: 10px 0;
   margin-top: auto;
-  z-index: 10; /* Ensure footer is above background */
+  z-index: 10;
 }
 
 .footer-content {

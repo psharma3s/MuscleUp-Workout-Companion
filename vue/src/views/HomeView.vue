@@ -58,12 +58,14 @@
           </p>
           <!-- Add more content inside this box as needed -->
           <p class="text-sm text-gray-600">
-            Explore your workout metrics, schedule, and more.
+            You can view your classes, your workout history and metrics, and so much more with this ultimate fitness companion. THank you for using MuscleUp.
+            Start your workout here!
           </p>
           <!-- Start Workout Button Linking to startworkout Page -->
           <router-link to="/startworkout" class="start-workout-btn">
             Start Workout
           </router-link>
+          <img src="src/assets/images/motivation.gif"/>
         </div>
       </div>
 
@@ -284,18 +286,18 @@ body {
 
 .nav-button,
 .feature-button {
-  color: white;
+  color: rgb(1, 8, 19);
   text-decoration: none;
   padding: 10px 20px;
   border-radius: 5px;
-  background-color: #555;
+  background-color: #0e8fca;
   margin: 0 5px;
   transition: background-color 0.3s;
 }
 
 .nav-button:hover,
 .feature-button:hover {
-  background-color: #777;
+  background-color: #4978cf;
 }
 
 /* Check-in Button Section */
@@ -369,18 +371,34 @@ body {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 20px;
   border-radius: 8px;
-  width: 100%; /* Ensure it takes full width */
+  width: 100%;  
   box-sizing: border-box;
+  background-image: url('/src/assets/images/welcome.png');
+  background-size: cover;
+  background-position: center;
+  
+  
 }
-
+.welcome-box img {
+  width: 80%;
+  height: auto;
+}
 .welcome-message h1 {
   color: #333;
 }
 
+
+@font-face {
+  font-family: 'MyCustomFont';
+  src: url('src/assets/fonts/welcome.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 .welcome-message .highlight {
-  color: #ff6f61; /* Accent color for username */
-  font-weight: bold;
-  font-size: 2rem;
+  font-family: 'MyCustomFont', sans-serif;
+  color: #360346;
+  font-size: 3rem;
 }
 
 .welcome-message p {
@@ -410,8 +428,11 @@ body {
   padding: 20px;
   border-radius: 8px;
   margin-top: 20px;
-  width: 100%;
+  width: 100%;  
   box-sizing: border-box;
+  background-image:  url('/src/assets/images/calendar1.png'); 
+  background-position: center;
+  background-size: cover;
 }
 
 /* Flex Layout for Main Sections (Welcome Box and Calendar) */
