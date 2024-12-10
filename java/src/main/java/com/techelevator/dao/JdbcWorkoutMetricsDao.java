@@ -1,5 +1,6 @@
 package com.techelevator.dao;
 
+import com.techelevator.model.EquipmentUsageDto;
 import com.techelevator.model.WorkoutMetrics;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -72,5 +73,44 @@ public class JdbcWorkoutMetricsDao implements WorkoutMetricsDao {
             metrics.add(mapRowToWorkoutMetrics(results));
         }
         return metrics;
+    }
+
+    public List<EquipmentUsageDto> getEquipmentUsageForMonthOrYear(String month, String year) {
+        String sql = "SELECT equipment_used, COUNT(*) as usage_count " +
+                "FROM workout_metrics " +
+                "WHERE 1=1 ";
+
+        List<Object> params = new ArrayList<>();
+
+        if (month != null && !month.isEmpty()) {
+            sql += "AND TO_CHAR(date, 'YYYY-MM') = ? ";
+            params.add(month);
+        } else if (year != null && !year.isEmpty()) {
+            sql += "AND TO_CHAR(date, 'YYYY') = ? ";
+            params.add(year);
+        }
+
+        sql += "AND equipment_used IS NOT NULL " +
+                "AND LOWER(equipment_used) != 'none' " +
+                "AND LOWER(equipment_used) != '' " +
+                "GROUP BY equipment_used " +
+                "ORDER BY usage_count DESC";
+
+        List<EquipmentUsageDto> usageMetrics = new ArrayList<>();
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, params.toArray());
+        while (results.next()) {
+            EquipmentUsageDto dto = new EquipmentUsageDto();
+            dto.setEquipmentUsed(results.getString("equipment_used"));
+            dto.setUsageCount(results.getInt("usage_count"));
+            usageMetrics.add(dto);
+        }
+        return usageMetrics;
+    }
+
+    private String capitalize(String equipment) {
+        if (equipment == null || equipment.isEmpty()) {
+            return equipment;
+        }
+        return equipment.substring(0, 1).toUpperCase() + equipment.substring(1);
     }
 }

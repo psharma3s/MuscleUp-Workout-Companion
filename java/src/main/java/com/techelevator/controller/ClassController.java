@@ -60,7 +60,6 @@ public class ClassController {
     }
 
     @PostMapping("/{classId}/register")
-    @PreAuthorize("hasRole('USER')")
     @CrossOrigin
     public ResponseEntity<String> registerUserForClass(@PathVariable int classId, Principal principal) {
         User user = userDao.getUserByUsername(principal.getName());
@@ -72,7 +71,6 @@ public class ClassController {
     }
 
     @PostMapping("/{classId}/drop")
-    @PreAuthorize("hasRole('USER')")
     @CrossOrigin
     public ResponseEntity<String> dropUserFromClass(@PathVariable int classId, Principal principal) {
         User user = userDao.getUserByUsername(principal.getName());

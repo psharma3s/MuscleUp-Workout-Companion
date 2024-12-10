@@ -1,9 +1,12 @@
 package com.techelevator.controller;
 
 import com.techelevator.dao.WorkoutMetricsDao;
+import com.techelevator.model.EquipmentUsageDto;
 import com.techelevator.model.WorkoutMetrics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,5 +38,14 @@ public class WorkoutMetricsController {
     @GetMapping("/{userId}/equipment")
     public List<WorkoutMetrics> getMetricsWithEquipment(@PathVariable int userId) {
         return workoutMetricsDao.getMetricsWithEquipmentByUserId(userId);
+    }
+
+    @GetMapping("/equipment-usage")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ResponseEntity<List<EquipmentUsageDto>> getEquipmentUsage(
+            @RequestParam(required = false) String month,
+            @RequestParam(required = false) String year) {
+        List<EquipmentUsageDto> usageMetrics = workoutMetricsDao.getEquipmentUsageForMonthOrYear(month, year);
+        return ResponseEntity.ok(usageMetrics);
     }
 }

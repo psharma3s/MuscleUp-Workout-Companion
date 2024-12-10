@@ -1,5 +1,6 @@
 package com.techelevator.dao;
 
+import com.techelevator.model.EquipmentUsageDto;
 import com.techelevator.model.WorkoutMetrics;
 
 import java.util.List;
@@ -15,4 +16,5 @@ public interface WorkoutMetricsDao {
     List<WorkoutMetrics> getAllMetrics();
 
     List<WorkoutMetrics> getMetricsWithEquipmentByUserId(int userId);
+    List<EquipmentUsageDto> getEquipmentUsageForMonthOrYear(String month, String year);
 }

@@ -11,6 +11,9 @@
 
       <!-- Navigation Buttons (center and right aligned) -->
       <div class="nav-buttons">
+                  <router-link v-if="isEmployee" to="/equipmentuse" class="nav-button">
+            Equipment Usage
+            </router-link>
         <router-link
           v-for="feature in features"
           :key="feature.name"

@@ -13,6 +13,7 @@ import CheckInOutView from "../views/CheckInOutView.vue";
 import StartExercise from "../views/StartExerciseView.vue";
 import ProfileView from '../views/ProfileView.vue';
 import EmployeeCheckoutView from '../views/EmployeeCheckoutView.vue';
+import EmployeeEquipmentUsage from '../views/EmployeeEquipmentUsage.vue'
 /**
  * The Vue Router is used to "direct" the browser to render a specific view component
  * inside of App.vue depending on the URL.
@@ -96,6 +97,12 @@ const routes = [
   component: EmployeeCheckoutView,
   meta: { requiresAuth: true, requiresRole: 'ROLE_EMPLOYEE' },
   },
+  {
+    path: '/equipmentuse',
+    name: 'Equipment Usage',
+    component: EmployeeEquipmentUsage,
+    meta: { requiresAuth: true, requiresEmployee: true },
+  },
 ];
 
 // Create the router
@@ -104,7 +111,7 @@ const router = createRouter({
   routes: routes
 });
 
-router.beforeEach((to) => {
+router.beforeEach((to, from, next) => {
 
   // Get the Vuex store
   const store = useStore();
@@ -117,6 +124,17 @@ router.beforeEach((to) => {
     return { name: "login" };
   }
   // Otherwise, do nothing and they'll go to their next destination
+
+  if (to.meta.requiresEmployee) {
+    const isEmployee = store.state.user.authorities?.some(auth => auth.name === 'ROLE_EMPLOYEE');
+    if (isEmployee) {
+      next();
+    } else {
+      next('/'); // Redirect non-employees to the home page
+    }
+  } else {
+    next();
+  }
 });
 
 export default router;
