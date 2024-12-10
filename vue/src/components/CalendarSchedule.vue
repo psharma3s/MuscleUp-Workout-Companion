@@ -226,6 +226,7 @@ export default {
       showEventLabel: false,
       currentDate: null,
       selectedClass: {},
+      selectedDate: null,
       showRegisterPopup: false,
       showDropClassPopup: false,
       showCreateClassForm: false,
