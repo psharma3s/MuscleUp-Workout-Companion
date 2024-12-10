@@ -27,7 +27,7 @@ export function createStore(currentToken, currentUser) {
         localStorage.setItem('token', token);
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       },
-      // Mutation to update user profile
+     
       SET_USER(state, userData) {
         state.user = userData;
         localStorage.setItem('user', JSON.stringify(userData));
@@ -41,7 +41,7 @@ export function createStore(currentToken, currentUser) {
       }
     },
     actions: {
-      // Optionally, you can use actions if needed
+      
     },
   });
 

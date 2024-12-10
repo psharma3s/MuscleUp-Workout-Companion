@@ -1,9 +1,9 @@
 import axios from 'axios';
 
 export default {
-  namespaced: true, // Enables namespacing for the module
+  namespaced: true, 
   state: {
-    metrics: [], // Store workout metrics data here
+    metrics: [], 
     equipmentMetrics: [],
   },
   mutations: {

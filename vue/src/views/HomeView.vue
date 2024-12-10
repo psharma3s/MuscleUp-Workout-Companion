@@ -58,7 +58,7 @@
           </p>
           <!-- Add more content inside this box as needed -->
           <p class="text-sm text-gray-600">
-            You can view your classes, your workout history and metrics, and so much more with this ultimate fitness companion. THank you for using MuscleUp.
+            You can view your classes, your workout history and metrics, and so much more with this ultimate fitness companion. Thank you for using MuscleUp.
             Start your workout here!
           </p>
           <!-- Start Workout Button Linking to startworkout Page -->

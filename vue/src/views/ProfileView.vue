@@ -11,7 +11,7 @@
 
       <!-- Navigation Links -->
       <ul class="nav-links">
-        <li><router-link to="/home">Home</router-link></li>
+        <li><router-link to="/">Home</router-link></li>
         <li><router-link to="/workout-metrics">Workout Metrics</router-link></li>
         <li><router-link to="/gym-checkin">History</router-link></li>
         <li><router-link to="/blog">Blog</router-link></li>
@@ -42,12 +42,14 @@
 
           <div class="stats-card">
             <h4>Total Workouts</h4>
+            <!-- Calculate the total workouts from the metrics array -->
             <p>{{ totalWorkouts }}</p>
           </div>
 
           <div class="stats-card">
             <h4>Classes Attended</h4>
-            <p>{{ classesAttended }}</p>
+            <!-- Calculate the total classes attended from the classesAttended array -->
+            <p>{{ totalClassesAttended }}</p>
           </div>
         </div>
 
@@ -79,54 +81,36 @@
 </template>
 
 <script>
-import axios from 'axios';
-
 export default {
   computed: {
     user() {
       return this.$store.state.user;
     },
-  },
-  data() {
-    return {
-      totalWorkouts: 0,  // To store total workouts fetched from the API
-      classesAttended: 0,  // To store classes attended fetched from the API
-    };
+    metrics() {
+      return this.$store.getters['workoutMetrics/metrics']; // Get the workout metrics data from Vuex store
+    },
+    totalWorkouts() {
+     
+      return this.metrics.length;
+    },
+    totalClassesAttended() {
+     
+      return this.user.classesAttended || 10;
+    }
   },
   mounted() {
-    // Fetch the total workouts and classes attended from the backend
-    this.fetchUserStats();
-  },
-  methods: {
-    async fetchUserStats() {
-      try {
-        const userId = this.user.id;  // Assuming `user` is available in Vuex
-
-        // Fetch total workouts from the WorkoutMetricsController
-        const workoutsResponse = await axios.get(`http://localhost:9000/api/metrics/user/${userId}/totalWorkouts`, {
-          headers: {
-            "Authorization": `Bearer ${localStorage.getItem("token")}`,  // Include the token in the header
-          }
-        });
-
-        // Fetch classes attended from the ClassController
-        const classesResponse = await axios.get(`http://localhost:9000/api/classes/user/${userId}/classesAttended`, {
-          headers: {
-            "Authorization": `Bearer ${localStorage.getItem("token")}`,
-          }
-        });
-
-        this.totalWorkouts = workoutsResponse.data;  // Assuming response contains the number of workouts
-        this.classesAttended = classesResponse.data;  // Assuming response contains the number of classes attended
-      } catch (error) {
-        console.error("Failed to fetch user stats:", error);
-      }
-    },
+  
+    const userId = this.user.id;
+    if (userId) {
+      this.$store.dispatch('workoutMetrics/fetchMetricsByUserId', userId).catch((error) => {
+        console.error('Failed to load metrics:', error);
+      });
+    }
   },
 };
 </script>
-<style scoped>
 
+<style scoped>
 .profile-view {
   position: static;
   display: flex;
@@ -137,7 +121,6 @@ export default {
   padding: 10px;
   margin: 0; 
 }
-
 
 .sidebar {
   width: 220px;
@@ -192,7 +175,6 @@ export default {
   font-size: 1rem;
 }
 
-
 .main-content {
   flex-grow: 1; 
   width: calc(100% - 240px); 
@@ -212,7 +194,6 @@ export default {
   background-image: url('/src/assets/images/profile.avif');
   background-position: center;
   background-size: cover;
-
 }
 
 .profile-info {

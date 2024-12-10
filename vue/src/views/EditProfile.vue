@@ -2,55 +2,55 @@
   <div class="profile-edit">
     <h1>Edit Profile</h1>
     <form @submit.prevent="updateProfile">
-      <!-- Name Field -->
+      
       <div class="form-group">
         <label for="name">Name:</label>
         <input id="name" v-model="profile.name" required />
       </div>
 
-      <!-- Email Field -->
+    
       <div class="form-group">
         <label for="email">Email:</label>
         <input id="email" v-model="profile.email" required />
       </div>
 
-      <!-- Workout Goals Field -->
+      
       <div class="form-group">
         <label for="workoutGoals">Workout Goals:</label>
         <textarea id="workoutGoals" v-model="profile.workoutGoals"></textarea>
       </div>
-
-      <!-- Weight Field -->
       <div class="form-group">
         <label for="weight">Weight (lbs):</label>
         <input id="weight" v-model="profile.weight" type="number" min="0" step="0.1" />
       </div>
 
-      <!-- Height Field -->
+    
       <div class="form-group">
         <label for="height">Height (cm):</label>
         <input id="height" v-model="profile.height" type="number" min="0" />
       </div>
 
-      <!-- Profile Picture Upload Section -->
+      
       <div class="form-group">
         <label for="profilePicture">Profile Picture:</label>
         <input type="file" @change="onFileSelected" />
 
-        <!-- Profile Picture Preview -->
+       
         <div v-if="profile.profilePictureUrl" class="profile-picture-preview">
           <h3>Preview:</h3>
           <img :src="profile.profilePictureUrl" alt="Profile Picture" width="150" height="150" />
         </div>
       </div>
 
-      <!-- Submit Button -->
+      
       <button type="submit" class="btn-save">Save Changes</button>
     </form>
   </div>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
@@ -58,48 +58,91 @@ export default {
         name: "",
         email: "",
         workoutGoals: "",
-        profilePictureUrl: "",
-        weight: "", // Add weight
-        height: "", // Add height
+        profilePictureUrl: "", 
+        weight: "",
+        height: "",
       },
     };
   },
   mounted() {
-    // Retrieve profile data from Vuex store
     const user = this.$store.state.user;
     if (user) {
       this.profile.name = user.name || "";
       this.profile.email = user.email || "";
       this.profile.workoutGoals = user.workoutGoals || "";
       this.profile.profilePictureUrl = user.profilePictureUrl || "";
-      this.profile.weight = user.weight || "";  // Retrieve weight
-      this.profile.height = user.height || "";  // Retrieve height
+      this.profile.weight = user.weight || "";  
+      this.profile.height = user.height || "";
     }
   },
   methods: {
     onFileSelected(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const formData = new FormData();
-        formData.append("image", file); // Correct field name for the file
+  const file = event.target.files[0];
+  if (file) {
+    const formData = new FormData();
+    formData.append("image", file);  
 
-        // Handle file upload and preview
-      }
-    },
-    updateProfile() {
-      // Update Vuex store with the new profile data
-      this.$store.commit('SET_USER', this.profile);
+    const apiKey = import.meta.env.VITE_API_KEY;  
 
-      // Optionally, store data in localStorage if you want persistence between page reloads
-      localStorage.setItem("userProfile", JSON.stringify(this.profile));
-
-      alert("Profile updated successfully!");
-    }
+ 
+axios.post(`https://api.imgbb.com/1/upload?key=${apiKey}`, formData, {
+  headers: {
+    'Content-Type': 'multipart/form-data',
   }
+})
+.then((response) => {
+  if (response.data && response.data.data && response.data.data.url) {
+    
+    this.profile.profilePictureUrl = response.data.data.url;
+    
+    
+    this.$store.commit('SET_USER', { 
+      ...this.$store.state.user, 
+      profilePictureUrl: this.profile.profilePictureUrl 
+    });
+    
+    console.log("Uploaded Image URL:", this.profile.profilePictureUrl); // Log URL for debugging
+  } else {
+    console.error("Error: Image URL not found in response.");
+  }
+})
+.catch((error) => {
+  console.error("Failed to upload profile picture:", error);
+});
+
+  }
+},
+
+
+    updateProfile() {
+      axios.put("http://localhost:9000/profile", this.profile, {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,  // Include the token in the header
+        }
+      })
+      .then(() => {
+        alert("Profile updated successfully!");
+      })
+      .catch((error) => {
+        console.error("Failed to update profile:", error.response?.data || error.message);
+      });
+      this.$store.commit("SET_USER", {
+    ...this.$store.state.user,
+    name: this.profile.name,
+    email: this.profile.email,
+    workoutGoals: this.profile.workoutGoals,
+    profilePictureUrl: this.profile.profilePictureUrl,
+    weight: this.profile.weight,  // Include weight
+    height: this.profile.height,  // Include height
+  });
+
+ 
+  localStorage.setItem("userProfile", JSON.stringify(this.profile));
+}
+}
 };
+
 </script>
-
-
 
 <style scoped>
 /* Style the form layout */
