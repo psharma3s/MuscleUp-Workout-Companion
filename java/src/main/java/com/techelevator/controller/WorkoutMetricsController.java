@@ -48,4 +48,9 @@ public class WorkoutMetricsController {
         List<EquipmentUsageDto> usageMetrics = workoutMetricsDao.getEquipmentUsageForMonthOrYear(month, year);
         return ResponseEntity.ok(usageMetrics);
     }
+    @GetMapping("/user/{userId}/totalWorkouts")
+    public int getTotalWorkouts(@PathVariable int userId) {
+        return workoutMetricsDao.getTotalWorkoutsByUserId(userId);  // Implement this method in your DAO
+    }
+
 }

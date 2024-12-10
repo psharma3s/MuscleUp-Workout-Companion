@@ -157,6 +157,10 @@ public class JdbcClassEventDao implements ClassEventDao {
         }
         return members;
     }
+    public int getClassesAttendedByUserId(int userId) {
+        String sql = "SELECT COUNT(*) FROM class_event WHERE user_id = ?";  // Adjust the query based on your schema
+        return jdbcTemplate.queryForObject(sql, Integer.class, userId);  // Returns the number of classes attended
+    }
 
     private ClassEvent mapRowToClassEvent(SqlRowSet rs) {
         ClassEvent ce = new ClassEvent();

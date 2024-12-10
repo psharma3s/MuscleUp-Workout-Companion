@@ -107,10 +107,22 @@ public class JdbcWorkoutMetricsDao implements WorkoutMetricsDao {
         return usageMetrics;
     }
 
+
     private String capitalize(String equipment) {
         if (equipment == null || equipment.isEmpty()) {
             return equipment;
         }
         return equipment.substring(0, 1).toUpperCase() + equipment.substring(1);
+    }
+
+    @Override
+    public int getTotalWorkoutsByUserId(int userId) {
+        String sql = "SELECT COUNT(*) FROM workout_metrics WHERE user_id = ?";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
+
+        if (results.next()) {
+            return results.getInt(1);  // The first column in the result set will be the count
+        }
+        return 0;
     }
 }

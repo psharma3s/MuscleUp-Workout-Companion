@@ -25,7 +25,7 @@
       <div class="profile-details">
         <h3>Profile Information</h3>
         <div class="profile-info">
-          <p><strong>Weight:</strong> {{ user.weight }} kg</p>
+          <p><strong>Weight:</strong> {{ user.weight }} lbs</p>
           <p><strong>Height:</strong> {{ user.height }} cm</p>
           <p><strong>Workout Goals:</strong> {{ user.workoutGoals }}</p>
         </div>
@@ -42,12 +42,12 @@
 
           <div class="stats-card">
             <h4>Total Workouts</h4>
-            <p>{{ user.totalWorkouts }}</p>
+            <p>{{ totalWorkouts }}</p>
           </div>
 
           <div class="stats-card">
             <h4>Classes Attended</h4>
-            <p>{{ user.classesAttended }}</p>
+            <p>{{ classesAttended }}</p>
           </div>
         </div>
 
@@ -79,15 +79,52 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   computed: {
     user() {
       return this.$store.state.user;
     },
   },
+  data() {
+    return {
+      totalWorkouts: 0,  // To store total workouts fetched from the API
+      classesAttended: 0,  // To store classes attended fetched from the API
+    };
+  },
+  mounted() {
+    // Fetch the total workouts and classes attended from the backend
+    this.fetchUserStats();
+  },
+  methods: {
+    async fetchUserStats() {
+      try {
+        const userId = this.user.id;  // Assuming `user` is available in Vuex
+
+        // Fetch total workouts from the WorkoutMetricsController
+        const workoutsResponse = await axios.get(`http://localhost:9000/api/metrics/user/${userId}/totalWorkouts`, {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`,  // Include the token in the header
+          }
+        });
+
+        // Fetch classes attended from the ClassController
+        const classesResponse = await axios.get(`http://localhost:9000/api/classes/user/${userId}/classesAttended`, {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          }
+        });
+
+        this.totalWorkouts = workoutsResponse.data;  // Assuming response contains the number of workouts
+        this.classesAttended = classesResponse.data;  // Assuming response contains the number of classes attended
+      } catch (error) {
+        console.error("Failed to fetch user stats:", error);
+      }
+    },
+  },
 };
 </script>
-
 <style scoped>
 
 .profile-view {
@@ -168,10 +205,14 @@ export default {
 }
 
 .profile-details {
-  background-color: rgba(255, 255, 255, 0.589);
+  background-color: rgba(243, 236, 236, 0.589);
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-image: url('/src/assets/images/profile.avif');
+  background-position: center;
+  background-size: cover;
+
 }
 
 .profile-info {

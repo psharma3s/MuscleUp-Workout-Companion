@@ -20,4 +20,5 @@ public interface ClassEventDao {
     void dropUserFromClass(int userId, int classId);
 
     List<String> getRegisteredMembersForClass(int classId);
+    int getClassesAttendedByUserId(int userId);
 }

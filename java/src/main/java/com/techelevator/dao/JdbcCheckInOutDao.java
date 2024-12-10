@@ -79,4 +79,8 @@ public class JdbcCheckInOutDao implements CheckInOutDao {
                 "FROM user_gym_visits WHERE user_id = ?";
         return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getDate("check_in_date").toLocalDate(), userId);
     }
+    public int getClassesAttendedByUserId(int userId) {
+        String sql = "SELECT COUNT(*) FROM class_event WHERE user_id = ?";  // Adjust the query based on your schema
+        return jdbcTemplate.queryForObject(sql, Integer.class, userId);  // Returns the number of classes attended
+    }
 }

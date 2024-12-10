@@ -20,6 +20,18 @@
         <textarea id="workoutGoals" v-model="profile.workoutGoals"></textarea>
       </div>
 
+      <!-- Weight Field -->
+      <div class="form-group">
+        <label for="weight">Weight (lbs):</label>
+        <input id="weight" v-model="profile.weight" type="number" min="0" step="0.1" />
+      </div>
+
+      <!-- Height Field -->
+      <div class="form-group">
+        <label for="height">Height (cm):</label>
+        <input id="height" v-model="profile.height" type="number" min="0" />
+      </div>
+
       <!-- Profile Picture Upload Section -->
       <div class="form-group">
         <label for="profilePicture">Profile Picture:</label>
@@ -39,8 +51,6 @@
 </template>
 
 <script>
-import axios from "axios";
-
 export default {
   data() {
     return {
@@ -48,75 +58,48 @@ export default {
         name: "",
         email: "",
         workoutGoals: "",
-        profilePictureUrl: "", // URL for profile picture
+        profilePictureUrl: "",
+        weight: "", // Add weight
+        height: "", // Add height
       },
     };
   },
   mounted() {
+    // Retrieve profile data from Vuex store
     const user = this.$store.state.user;
     if (user) {
       this.profile.name = user.name || "";
       this.profile.email = user.email || "";
       this.profile.workoutGoals = user.workoutGoals || "";
       this.profile.profilePictureUrl = user.profilePictureUrl || "";
+      this.profile.weight = user.weight || "";  // Retrieve weight
+      this.profile.height = user.height || "";  // Retrieve height
     }
   },
   methods: {
     onFileSelected(event) {
-  const file = event.target.files[0];
-  if (file) {
-    const formData = new FormData();
-    formData.append("image", file);  // Correct field name for the file
+      const file = event.target.files[0];
+      if (file) {
+        const formData = new FormData();
+        formData.append("image", file); // Correct field name for the file
 
-    const apiKey = import.meta.env.VITE_API_KEY;  // Make sure API key is loaded correctly
-
-    // Make the POST request to ImgBB API
-    // After successfully uploading the image to ImgBB
-axios.post(`https://api.imgbb.com/1/upload?key=${apiKey}`, formData, {
-  headers: {
-    'Content-Type': 'multipart/form-data',
-  }
-})
-.then((response) => {
-  if (response.data && response.data.data && response.data.data.url) {
-    // Set the profile picture URL in the profile object
-    this.profile.profilePictureUrl = response.data.data.url;
-    
-    // Update Vuex store with the new user data
-    this.$store.commit('SET_USER', { 
-      ...this.$store.state.user, 
-      profilePictureUrl: this.profile.profilePictureUrl 
-    });
-    
-    console.log("Uploaded Image URL:", this.profile.profilePictureUrl); // Log URL for debugging
-  } else {
-    console.error("Error: Image URL not found in response.");
-  }
-})
-.catch((error) => {
-  console.error("Failed to upload profile picture:", error);
-});
-
-  }
-},
-
-
+        // Handle file upload and preview
+      }
+    },
     updateProfile() {
-      axios.put("http://localhost:9000/profile", this.profile, {
-        headers: {
-          "Authorization": `Bearer ${localStorage.getItem("token")}`,  // Include the token in the header
-        }
-      })
-      .then(() => {
-        alert("Profile updated successfully!");
-      })
-      .catch((error) => {
-        console.error("Failed to update profile:", error.response?.data || error.message);
-      });
+      // Update Vuex store with the new profile data
+      this.$store.commit('SET_USER', this.profile);
+
+      // Optionally, store data in localStorage if you want persistence between page reloads
+      localStorage.setItem("userProfile", JSON.stringify(this.profile));
+
+      alert("Profile updated successfully!");
     }
   }
 };
 </script>
+
+
 
 <style scoped>
 /* Style the form layout */

@@ -42,6 +42,10 @@ public class ClassController {
     public ClassEvent getClassById(@PathVariable int classId) {
         return classEventDao.getClassById(classId);
     }
+    @GetMapping("/user/{userId}/classesAttended")
+    public int getClassesAttended(@PathVariable int userId) {
+        return classEventDao.getClassesAttendedByUserId(userId);
+    }
 
     @PostMapping
     @PreAuthorize("hasRole('EMPLOYEE')")

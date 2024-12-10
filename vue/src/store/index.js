@@ -16,7 +16,9 @@ export function createStore(currentToken, currentUser) {
         name: "",
         email: "",
         workoutGoals: "",
-        profilePictureUrl: "", // Add profile picture URL here
+        profilePictureUrl: "", 
+        weight: "",
+        height: "",
       }
     },
     mutations: {

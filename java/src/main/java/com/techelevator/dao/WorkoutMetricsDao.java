@@ -9,6 +9,7 @@ public interface WorkoutMetricsDao {
 
 
     void addMetric(WorkoutMetrics metric);
+    int getTotalWorkoutsByUserId(int userId);
 
 
     List<WorkoutMetrics> getMetricsByUserId(int userId);
