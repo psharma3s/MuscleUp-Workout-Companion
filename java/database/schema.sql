@@ -63,4 +63,8 @@ CREATE TABLE class_registrations (
 GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE workout_metrics, classes, class_registrations TO final_capstone_appuser;
 GRANT USAGE, SELECT, UPDATE ON SEQUENCE workout_metrics_metric_id_seq, classes_class_id_seq, class_registrations_registration_id_seq TO final_capstone_appuser;
 
+ALTER TABLE user_gym_visits
+ADD COLUMN visit_status VARCHAR(20) DEFAULT 'Checked In',
+ADD COLUMN visit_duration_minutes INT;
+
 COMMIT TRANSACTION;
