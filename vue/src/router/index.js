@@ -101,7 +101,7 @@ const routes = [
     path: '/equipmentuse',
     name: 'Equipment Usage',
     component: EmployeeEquipmentUsage,
-    meta: { requiresAuth: true, requiresEmployee: true },
+    meta: { requiresAuth: true, requiresRole: 'ROLE_EMPLOYEE' },
   },
 ];
 
@@ -111,7 +111,7 @@ const router = createRouter({
   routes: routes
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to) => {
 
   // Get the Vuex store
   const store = useStore();
@@ -124,17 +124,6 @@ router.beforeEach((to, from, next) => {
     return { name: "login" };
   }
   // Otherwise, do nothing and they'll go to their next destination
-
-  if (to.meta.requiresEmployee) {
-    const isEmployee = store.state.user.authorities?.some(auth => auth.name === 'ROLE_EMPLOYEE');
-    if (isEmployee) {
-      next();
-    } else {
-      next('/'); // Redirect non-employees to the home page
-    }
-  } else {
-    next();
-  }
 });
 
 export default router;
