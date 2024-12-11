@@ -80,6 +80,6 @@ ALTER TABLE users
 ADD COLUMN class_attended INT DEFAULT 0;
 
 GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE workout_metrics, classes, class_registrations, user_classes TO final_capstone_appuser;
-GRANT USAGE, SELECT, UPDATE ON SEQUENCE workout_metrics_metric_id_seq, classes_class_id_seq, class_registrations_registration_id_seq, user_classes_class_id_seq TO final_capstone_appuser;
+GRANT USAGE, SELECT, UPDATE ON SEQUENCE workout_metrics_metric_id_seq, classes_class_id_seq, class_registrations_registration_id_seq, user_classes_id_seq TO final_capstone_appuser;
 
 COMMIT TRANSACTION;
