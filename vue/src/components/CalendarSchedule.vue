@@ -40,6 +40,12 @@
       Create Class
     </button>
 
+    <!-- Button to Navigate to Past Classes Page -->
+    <router-link to="/pastclasses" class="past-class-button">
+      View Past Classes
+    </router-link>
+
+
 
     <!-- Employee Day Popup -->
     <div v-if="showEmployeeDayPopup" class="popup-overlay">
@@ -107,7 +113,8 @@
         <ul class="scrollable-list">
           <li v-for="(cls, idx) in unregisteredClassesForDate" :key="idx">
             <strong>{{ cls.name }}</strong> at {{ cls.time }}
-            <button @click="registerForClass(cls)">Register</button>
+            <button @click="registerForClass(cls)" v-if=!isClassLocked(cls)
+              :disabled="isClassLocked(cls)">Register</button>
             <button @click="viewClassInfo(cls, false)">View Info</button>
           </li>
         </ul>
@@ -139,7 +146,8 @@
           <li v-for="(cls, idx) in unregisteredClassesForDate" :key="idx">
             <strong>{{ cls.name }}</strong> at {{ cls.time }}
             <button @click="viewClassInfo(cls, false)">View Info</button>
-            <button @click="registerForClass(cls)">Register</button>
+            <button @click="registerForClass(cls)" v-if="!isClassLocked(cls)"
+              :disabled="isClassLocked(cls)">Register</button>
           </li>
         </ul>
         <button @click="showOtherClassesPopup = false">Close</button>
@@ -153,7 +161,7 @@
         <ul class="scrollable-list">
           <li v-for="(cls, idx) in registeredClassesForDate" :key="idx">
             <strong>{{ cls.name }}</strong> at {{ cls.time }}
-            <button @click="dropClass(cls)">Drop</button>
+            <button @click="dropClass(cls)" v-if="!isClassLocked(cls)" :disabled="isClassLocked(cls)">Drop</button>
           </li>
         </ul>
         <button @click="showWhichClassToDropPopup = false">Close</button>
@@ -257,7 +265,11 @@ export default {
       return this.classesForDate.filter(cls => cls.registeredMembers?.includes(this.userName));
     },
     myRegisteredClasses() {
-      return this.calendarEvents.filter(cls => cls.registeredMembers?.includes(this.userName));
+      const now = new Date();
+      return this.calendarEvents.filter(cls => {
+        const classDateTime = new Date(`${cls.date} ${cls.time}`);
+        return cls.registeredMembers?.includes(this.userName) && classDateTime >= now;
+      });
     },
     unregisteredClassesForDate() {
       return this.classesForDate.filter(cls => !cls.registeredMembers?.includes(this.userName));
@@ -287,6 +299,10 @@ export default {
         });
       }
       return results;
+    },
+    lockedClassesForDate() {
+      const now = new Date();
+      return this.classesForDate.filter(cls => new Date(cls.date + ' ' + cls.time) < now);
     }
   },
   methods: {
@@ -296,8 +312,25 @@ export default {
         const response = await axios.get('/classes', {
           headers: { Authorization: `Bearer ${this.token}` }
         });
+        const now = new Date();
+
+        for (const cls of response.data) {
+          const classDateTime = new Date(cls.date + ' ' + cls.time);
+          console.log("Sending");
+          if (classDateTime < now && cls.registeredMembers?.includes(this.userName)) {
+            await axios.post(`/classes/${cls.classId}/mark-attended`, {}, {
+              headers: { Authorization: `Bearer ${this.token}` },
+            });
+          }
+        }
+        await axios.get('/classes/load-classes', {
+          headers: { Authorization: `Bearer ${this.token}` }
+        });
+        const updatedResponse = await axios.get('/classes', {
+          headers: { Authorization: `Bearer ${this.token}` }
+        });
         // If you want to update parent's calendarEvents, emit an event:
-        this.$emit('update:calendarEvents', response.data);
+        this.$emit('update:calendarEvents', updatedResponse.data);
       } catch (error) {
         console.error('Failed to fetch classes', error);
       }
@@ -336,6 +369,7 @@ export default {
       }
     },
     handleDayClick(day) {
+      this.loadClasses();
       const selectedDate = day.id;
       this.currentDate = selectedDate;
       this.fetchClassesForDate(selectedDate);
@@ -470,7 +504,14 @@ export default {
     deleteClassesOnDate() {
       this.showEmployeeDayPopup = false;
       this.showEmployeeDeleteClasses = true;
+    },
+    isClassLocked(cls) {
+      const classDateTime = new Date(cls.date + ' ' + cls.time);
+      return classDateTime < new Date();
     }
+  },
+  async mounted() {
+    await this.loadClasses();
   }
 };
 </script>
@@ -640,4 +681,21 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.past-class-button {
+  margin: 15px 10px;
+  padding: 12px 25px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-size: 1rem;
+  cursor: pointer;
+  max-width: auto;
+  transition: background-color 0.3s ease;
+}
+
+.past-class-button:hover {
+  background-color: #0056b3;
 }</style>

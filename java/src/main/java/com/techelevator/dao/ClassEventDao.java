@@ -2,6 +2,7 @@ package com.techelevator.dao;
 
 import com.techelevator.model.ClassEvent;
 import java.util.List;
+import java.util.Map;
 
 public interface ClassEventDao {
 
@@ -21,4 +22,10 @@ public interface ClassEventDao {
 
     List<String> getRegisteredMembersForClass(int classId);
     int getClassesAttendedByUserId(int userId);
+
+    void markClassAsAttended();
+
+    void updateClassAttendedCounts();
+
+    List<Map<String, Object>> getPastClassesForUser(int userId);
 }

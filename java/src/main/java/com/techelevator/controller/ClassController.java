@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin
@@ -83,6 +84,31 @@ public class ClassController {
         }
         classEventDao.dropUserFromClass(user.getId(), classId);
         return ResponseEntity.ok("User dropped from class");
+    }
+
+    @PostMapping("/{classId}/mark-attended")
+    @CrossOrigin
+    public ResponseEntity<String> markClassAsAttended(@PathVariable int classId, Principal principal) {
+        User user = userDao.getUserByUsername(principal.getName());
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+        classEventDao.markClassAsAttended();
+        return ResponseEntity.ok("Class marked as attended");
+    }
+
+    @GetMapping("/load-classes")
+    @CrossOrigin
+    public ResponseEntity<String> loadClassesAndAttendance() {
+        classEventDao.updateClassAttendedCounts();
+        return ResponseEntity.ok("Success.");
+    }
+
+    @GetMapping("/past-classes")
+    public ResponseEntity<List<Map<String, Object>>> getPastClasses(Principal principal) {
+        int userId = userDao.getUserByUsername(principal.getName()).getId();
+        List<Map<String, Object>> pastClasses = classEventDao.getPastClassesForUser(userId);
+        return ResponseEntity.ok(pastClasses);
     }
 
 }

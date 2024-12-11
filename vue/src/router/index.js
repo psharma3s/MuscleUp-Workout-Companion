@@ -14,6 +14,7 @@ import StartExercise from "../views/StartExerciseView.vue";
 import ProfileView from '../views/ProfileView.vue';
 import EmployeeCheckoutView from '../views/EmployeeCheckoutView.vue';
 import EmployeeEquipmentUsage from '../views/EmployeeEquipmentUsage.vue'
+import PastClasses from '../views/PastClasses.vue'
 /**
  * The Vue Router is used to "direct" the browser to render a specific view component
  * inside of App.vue depending on the URL.
@@ -98,22 +99,16 @@ const routes = [
   meta: { requiresAuth: true, requiresRole: 'ROLE_EMPLOYEE' },
   },
   {
-    path: "/history/:userId",
-    name: "UserHistory",
-    component: CheckInOutView,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: "/workout-metrics/:userId",
-    name: "UserMetrics",
-    component: WorkoutMetrics,
-    meta: { requiresAuth: true },
-  },
-  {
     path: '/equipmentuse',
     name: 'Equipment Usage',
     component: EmployeeEquipmentUsage,
     meta: { requiresAuth: true, requiresRole: 'ROLE_EMPLOYEE' },
+  },
+  {
+    path: '/pastclasses',
+    name: 'Past Classes',
+    component: PastClasses,
+    meta: { requiresAuth: true },
   },
 ];
 

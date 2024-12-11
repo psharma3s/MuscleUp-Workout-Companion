@@ -12,7 +12,8 @@ CREATE TABLE users (
     name VARCHAR(50) NOT NULL,
     email VARCHAR(64),
     workout_goals VARCHAR(500),
-    profile_picture VARCHAR(500);
+    profile_picture VARCHAR(500),
+    class_attended INT DEFAULT 0;
 );
 
 
@@ -59,12 +60,20 @@ CREATE TABLE class_registrations (
     UNIQUE (class_id, user_id)
 );
 
+CREATE TABLE user_classes (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id),
+    class_name VARCHAR(255) NOT NULL,
+    class_date DATE NOT NULL,
+    instructor VARCHAR(255) NOT NULL,
+    class_id INT REFERENCES classes(class_id),
+    CONSTRAINT unique_user_class UNIQUE (user_id, class_id)
+);
 
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE workout_metrics, classes, class_registrations TO final_capstone_appuser;
-GRANT USAGE, SELECT, UPDATE ON SEQUENCE workout_metrics_metric_id_seq, classes_class_id_seq, class_registrations_registration_id_seq TO final_capstone_appuser;
+ALTER TABLE users
+ADD COLUMN class_attended INT DEFAULT 0;
 
-ALTER TABLE user_gym_visits
-ADD COLUMN visit_status VARCHAR(20) DEFAULT 'Checked In',
-ADD COLUMN visit_duration_minutes INT;
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE workout_metrics, classes, class_registrations, user_classes TO final_capstone_appuser;
+GRANT USAGE, SELECT, UPDATE ON SEQUENCE workout_metrics_metric_id_seq, classes_class_id_seq, class_registrations_registration_id_seq, user_classes_class_id_seq TO final_capstone_appuser;
 
 COMMIT TRANSACTION;

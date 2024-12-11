@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class JdbcClassEventDao implements ClassEventDao {
@@ -180,5 +181,41 @@ public class JdbcClassEventDao implements ClassEventDao {
         ce.setDuration(rs.getString("duration"));
         ce.setCaloriesBurned(rs.getString("calories_burned"));
         return ce;
+    }
+
+    @Override
+    public void markClassAsAttended() {
+        String sql = "INSERT INTO user_classes (user_id, class_name, class_date, instructor, class_id) " +
+                "SELECT r.user_id, c.name AS class_name, c.class_date, c.instructor, c.class_id " +
+                "FROM classes c " +
+                "JOIN class_registrations r ON c.class_id = r.class_id " +
+                "WHERE c.class_date <= CURRENT_DATE AND c.class_time < CURRENT_TIME " +
+                "ON CONFLICT (user_id, class_id) DO NOTHING";
+
+        jdbcTemplate.update(sql);
+    }
+
+    public void updateClassAttendedCounts() {
+        String sql = "UPDATE users u " +
+                "SET class_attended = (" +
+                "    SELECT COUNT(*) " +
+                "    FROM user_classes uc " +
+                "    WHERE uc.user_id = u.user_id" +
+                ")";
+
+        try {
+            jdbcTemplate.update(sql);
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to database", e);
+        }
+    }
+
+    public List<Map<String, Object>> getPastClassesForUser(int userId) {
+        String sql = "SELECT class_id, class_name, class_date, instructor " +
+                "FROM user_classes " +
+                "WHERE user_id = ? " +
+                "ORDER BY class_date DESC";
+
+        return jdbcTemplate.queryForList(sql, userId);
     }
 }
