@@ -62,7 +62,7 @@ CREATE TABLE class_registrations (
 
 CREATE TABLE user_classes (
     id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(id),
+    user_id INT REFERENCES users(user_id),
     class_name VARCHAR(255) NOT NULL,
     class_date DATE NOT NULL,
     instructor VARCHAR(255) NOT NULL,
