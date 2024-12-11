@@ -64,17 +64,20 @@ export default {
       },
     };
   },
-  mounted() {
-    const user = this.$store.state.user;
-    if (user) {
-      this.profile.name = user.name || "";
-      this.profile.email = user.email || "";
-      this.profile.workoutGoals = user.workoutGoals || "";
-      this.profile.profilePictureUrl = user.profilePictureUrl || "";
-      this.profile.weight = user.weight || "";  
-      this.profile.height = user.height || "";
-    }
-  },
+  
+    mounted() {
+  const user = this.$store.state.user;
+  if (user) {
+    this.profile.name = user.name || "";
+    this.profile.email = user.email || "";
+    this.profile.workoutGoals = user.workoutGoals || "";
+    this.profile.profilePictureUrl = user.profilePictureUrl || "";
+    this.profile.weight = localStorage.getItem('userWeight') || user.weight || "";  // Load weight from localStorage
+    this.profile.height = localStorage.getItem('userHeight') || user.height || "";  // Load height from localStorage
+  }
+},
+
+
   methods: {
     onFileSelected(event) {
   const file = event.target.files[0];
@@ -112,33 +115,51 @@ axios.post(`https://api.imgbb.com/1/upload?key=${apiKey}`, formData, {
 
   }
 },
+logout() {
+    // Clear the token and user data from localStorage
+    localStorage.removeItem("token");
+    localStorage.removeItem("userProfile");
+    localStorage.removeItem("userWeight");
+    localStorage.removeItem("userHeight");
+
+    // Clear Vuex store data
+    this.$store.commit('LOGOUT'); // Assuming you have the LOGOUT mutation in your Vuex store
+
+    // Redirect or perform other logout actions
+    this.$router.push('/login'); // Redirect to login page (optional)
+  },
 
 
-    updateProfile() {
-      axios.put("http://localhost:9000/profile", this.profile, {
-        headers: {
-          "Authorization": `Bearer ${localStorage.getItem("token")}`,  // Include the token in the header
-        }
-      })
-      .then(() => {
-        alert("Profile updated successfully!");
-      })
-      .catch((error) => {
-        console.error("Failed to update profile:", error.response?.data || error.message);
-      });
-      this.$store.commit("SET_USER", {
+updateProfile() {
+  axios.put("http://localhost:9000/profile", this.profile, {
+    headers: {
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,  // Include the token in the header
+    }
+  })
+  .then(() => {
+    alert("Profile updated successfully!");
+  })
+  .catch((error) => {
+    console.error("Failed to update profile:", error.response?.data || error.message);
+  });
+
+  // Update Vuex store and persist data in localStorage
+  this.$store.commit("SET_USER", {
     ...this.$store.state.user,
     name: this.profile.name,
     email: this.profile.email,
     workoutGoals: this.profile.workoutGoals,
     profilePictureUrl: this.profile.profilePictureUrl,
-    weight: this.profile.weight,  // Include weight
-    height: this.profile.height,  // Include height
+    weight: this.profile.weight,  // Save weight
+    height: this.profile.height,  // Save height
   });
 
- 
-  localStorage.setItem("userProfile", JSON.stringify(this.profile));
+  // Persist weight and height in localStorage directly
+  localStorage.setItem("userWeight", this.profile.weight);
+  localStorage.setItem("userHeight", this.profile.height);
 }
+
+
 }
 };
 

@@ -290,14 +290,14 @@ body {
   text-decoration: none;
   padding: 10px 20px;
   border-radius: 5px;
-  background-color: #0e8fca;
+  background-color: #f58f3be0;
   margin: 0 5px;
   transition: background-color 0.3s;
 }
 
 .nav-button:hover,
 .feature-button:hover {
-  background-color: #4978cf;
+  background-color: #8ea2c9;
 }
 
 /* Check-in Button Section */

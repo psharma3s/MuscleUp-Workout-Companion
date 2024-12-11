@@ -48,7 +48,7 @@ export default {
 </script>
 
 <style scoped>
-/* General Layout Styling for the page */
+
 #capstone-app {
   font-family: 'Arial', sans-serif;
   display: flex;
@@ -58,7 +58,7 @@ export default {
   width: 100%;
 }
 
-/* Background Image Styling (For Every Page Except Login and Register) */
+
 .background-image {
   position: absolute;
   top: 0;
@@ -67,8 +67,8 @@ export default {
   height: 100%;
   background: url('@/assets/images/background-picture-homepage.jpg') no-repeat center center;
   background-size: cover;
-  opacity: 0.7; /* Adjust opacity of the background */
-  z-index: -1; /* Ensure it's behind all content */
+  opacity: 0.7; 
+  z-index: -1;
 }
 
 /* Header Bar Styling */
