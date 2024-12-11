@@ -1,49 +1,55 @@
 <template>
   <div class="employee-checkout-view">
     <h1>Gym Users</h1>
-    <table class="user-table">
-      <thead>
-        <tr>
-          <th>Username</th>
-          <th>User ID</th>
-          <th>Last Check-In</th>
-          <th>Last Check-Out</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="user in users" :key="user.userId">
-          <td>{{ user.username }}</td>
-          <td>{{ user.userId }}</td>
-          <td>{{ user.lastCheckIn || "N/A" }}</td>
-          <td>{{ user.lastCheckOut || "N/A" }}</td>
-          <td>
-            <span
-              :class="{
-                'checked-in': user.status === 'Checked In',
-                'not-checked-in': user.status === 'Not Checked In',
-              }"
-            >
-              <i
-                v-if="user.status === 'Checked In'"
-                class="fas fa-check-circle"
-                aria-hidden="true"
-              ></i>
-              <i v-else class="fas fa-times-circle" aria-hidden="true"></i>
-            </span>
-          </td>
-          <td>
-            <button
-              :class="user.status === 'Checked In' ? 'check-out' : 'check-in'"
-              @click="user.status === 'Checked In' ? checkOutUser(user.userId) : checkInUser(user.userId)"
-            >
-              {{ user.status === 'Checked In' ? 'Check Out' : 'Check In' }}
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="employee-checkout-view">
+      <table class="user-table">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>User ID</th>
+            <th>Last Check-In</th>
+            <th>Last Check-Out</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="user in users" :key="user.userId">
+            <td>{{ user.username }}</td>
+            <td>{{ user.userId }}</td>
+            <td>{{ user.lastCheckIn || "N/A" }}</td>
+            <td>{{ user.lastCheckOut || "N/A" }}</td>
+            <td>
+              <span
+                :class="{
+                  'checked-in': user.status === 'Checked In',
+                  'not-checked-in': user.status === 'Not Checked In',
+                }"
+              >
+                <i
+                  v-if="user.status === 'Checked In'"
+                  class="fas fa-check-circle"
+                  aria-hidden="true"
+                ></i>
+                <i v-else class="fas fa-times-circle" aria-hidden="true"></i>
+              </span>
+            </td>
+            <td>
+              <button
+                :class="user.status === 'Checked In' ? 'check-out' : 'check-in'"
+                @click="
+                  user.status === 'Checked In'
+                    ? checkOutUser(user.userId)
+                    : checkInUser(user.userId)
+                "
+              >
+                {{ user.status === "Checked In" ? "Check Out" : "Check In" }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -142,9 +148,15 @@ h1 {
 .user-table {
   background-color: rgba(255, 253, 208, 0.8);
   border-collapse: collapse;
-  width: 100%;
-  margin: 20px 0;
-  text-align: left;
+  width: 70%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.user-table-container {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
 }
 
 .user-table th,
@@ -159,12 +171,12 @@ h1 {
 }
 
 .checked-in {
-  color: green;
+  color: #4caf50;
   font-size: 1.2rem;
 }
 
 .not-checked-in {
-  color: red;
+  color: #f44336;
   font-size: 1.2rem;
 }
 
@@ -186,7 +198,7 @@ button:disabled {
   color: white;
 }
 .check-in:hover {
-  background-color: #45a049;
+  background-color: #5cd65c;
 }
 
 .check-out {
@@ -194,7 +206,7 @@ button:disabled {
   color: white;
 }
 .check-out:hover {
-  background-color: #d32f2f;
+  background-color: #ff6666;
 }
 
 .fas {

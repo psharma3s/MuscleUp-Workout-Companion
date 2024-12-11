@@ -74,6 +74,8 @@ ALTER TABLE user_gym_visits
 ADD COLUMN visit_status VARCHAR(20) DEFAULT 'Checked In',
 ADD COLUMN visit_duration_minutes INT;
 
+ALTER TABLE user_gym_visits ALTER COLUMN visit_status DROP DEFAULT;
+
 ALTER TABLE users
 ADD COLUMN class_attended INT DEFAULT 0;
 
