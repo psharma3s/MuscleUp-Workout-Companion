@@ -67,7 +67,7 @@ const routes = [
 
   {
     path: '/workout-metrics',
-    name: 'WorkoutMetrics',
+    name: 'workout-metrics',
     component: () => import("@/views/WorkoutMetrics.vue"),
     meta: {
       requiresAuth: true,
@@ -75,7 +75,7 @@ const routes = [
   },
   {
     path: "/gym-checkin",
-    name: "CheckInOut",
+    name: "gym-checkin",
     component: CheckInOutView,
   },
   {
@@ -88,13 +88,13 @@ const routes = [
   },
   {
     path: '/profile',
-    name: 'Profile',
+    name: 'profile',
     component: ProfileView,
     meta: { requiresAuth: true },
   },
   {
     path: '/employee-checkout',
-  name: 'EmployeeCheckout',
+  name: 'employee-checkout',
   component: EmployeeCheckoutView,
   meta: { requiresAuth: true, requiresRole: 'ROLE_EMPLOYEE' },
   },

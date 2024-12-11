@@ -3,7 +3,7 @@
     <!-- Workout Metrics Box -->
     <div class="metrics-box">
       <div class="section-header">
-        <h1>Workout Metrics</h1>
+        <h1>Workout Log</h1>
         <p>Track your performance over time.</p>
       </div>
       <div class="metrics-table">
@@ -28,10 +28,11 @@
         <p v-else>No workout metrics available.</p>
       </div>
 
-      <button v-if="!showEquipmentMetrics" @click="loadEquipmentMetrics" class="toggle-button">
+      
+    </div>
+    <button v-if="!showEquipmentMetrics" @click="loadEquipmentMetrics" class="toggle-button">
         View Equipment Metrics
       </button>
-    </div>
 
     
     <div v-if="showEquipmentMetrics" class="metrics-box equipment-metrics">
@@ -226,13 +227,15 @@ th:hover {
 }
 
 button.toggle-button {
-  padding: 12px 20px;
+  padding: 1px 12px;
   background-color: #28a745;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s;
+  height: 50px;
+  width: 100vh;
 }
 
 button.toggle-button:hover {

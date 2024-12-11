@@ -9,7 +9,7 @@
         </router-link>
       </div>
 
-      <!-- Navigation Buttons (center and right aligned) -->
+      
       <div class="nav-buttons">
                   <router-link v-if="isEmployee" to="/equipmentuse" class="nav-button">
             Equipment Usage
@@ -139,7 +139,7 @@ export default {
       { name: "History", route: "/gym-checkin" },
     ];
 
-    // Add Employee Checkout dynamically based on role
+   
     if (
       this.$store.state.user.authorities?.some(
         (auth) => auth.name === "ROLE_EMPLOYEE"
@@ -148,7 +148,7 @@ export default {
       features.push({ name: "Employee Checkout", route: "/employee-checkout" });
     }
 
-    // Always add Logout as the last option
+    
     features.push({ name: "Logout", route: "/logout" });
 
     return {
@@ -255,7 +255,7 @@ body {
   padding: 0;
 }
 
-/* Header Bar */
+
 .header-bar {
   display: flex;
   align-items: center;
@@ -273,6 +273,7 @@ body {
 .logo {
   width: 120px;
   height: auto;
+  border-radius: 10%;
 }
 
 .nav-buttons {
@@ -286,12 +287,14 @@ body {
 
 .nav-button,
 .feature-button {
+  
+  font-weight: bold;
   color: rgb(1, 8, 19);
   text-decoration: none;
   padding: 10px 20px;
   border-radius: 5px;
   background-color: #f58f3be0;
-  margin: 0 5px;
+  margin: 10 5px;
   transition: background-color 0.3s;
 }
 
@@ -354,7 +357,7 @@ body {
   font-weight: bold;
 }
 
-/* Main Header and Welcome Box */
+
 .home-header {
   display: flex;
   justify-content: center;
@@ -364,7 +367,7 @@ body {
   padding: 10px;
 }
 
-/* Welcome Box Styling */
+
 .welcome-box {
   background-color: #f3f2f2e7;
   border: 1px solid #e5e5e5;
@@ -390,7 +393,7 @@ body {
 
 @font-face {
   font-family: 'MyCustomFont';
-  src: url('src/assets/fonts/welcome.ttf') format('truetype');
+  src: url('src/assets/fonts/aaa.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
@@ -420,14 +423,14 @@ body {
   background-color: #0056b3;
 }
 
-/* Calendar Box Styling */
+
 .calendar-box {
   background-color: #f9f9f9be;
   border: 1px solid #ebe4e4cc;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 20px;
   border-radius: 8px;
-  margin-top: 20px;
+  margin-top: 1px;
   width: 100%;  
   box-sizing: border-box;
   background-image:  url('/src/assets/images/calendar1.png'); 

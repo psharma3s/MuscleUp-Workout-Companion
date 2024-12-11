@@ -1,6 +1,6 @@
 <template>
   <div class="employee-checkout-view">
-    <h1>Gym Users</h1>
+    <!-- <h1>Gym Users</h1> -->
     <div class="employee-checkout-view">
       <table class="user-table">
         <thead>

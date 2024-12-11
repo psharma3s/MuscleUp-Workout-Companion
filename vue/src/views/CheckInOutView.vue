@@ -1,51 +1,47 @@
 <template>
   <div class="check-in-out-view">
-    <h1>Gym Check-In History</h1>
+  
 
-    <!-- Current Check-In Status -->
-    <div class="status">
-      <h3>Status: {{ checkInStatus ? "Checked In" : "Not Checked In" }}</h3>
-      <h3 v-if="checkInStatus">Current Session Time: {{ liveSessionTime }}</h3>
-    </div>
-
-    <!-- Average and Total Time -->
-    <div class="time-summary">
-      <div class="average-time">
-        <h3>Average Time Per Visit: {{ averageTime }}</h3>
-      </div>
-      <div class="total-time">
-        <h3>Total Time Spent in the Gym: {{ totalTime }}</h3>
-      </div>
-    </div>
-
-    <!-- Calendar Navigation and Display -->
-    <div class="calendar-section">
-      <h3>Check-In Calendar</h3>
-      <div class="calendar-header">
-        <button @click="prevMonth">Previous</button>
-        <span class="month-label"
-          >{{ currentMonthName }} {{ currentYear }}</span
-        >
-        <button @click="nextMonth">Next</button>
-      </div>
-
-      <!-- Days of the Week Labels -->
-      <div class="calendar-grid">
-        <div
-          v-for="(day, index) in weekDays"
-          :key="'label-' + index"
-          class="calendar-label"
-        >
-          {{ day }}
+    <!-- Main Content Container -->
+    <div class="container">
+      <!-- Left Section (Status and Average Time) -->
+      <div class="left-section">
+        <!-- Current Check-In Status -->
+        <div class="status-box">
+          <h3>Status: {{ checkInStatus ? "Checked In" : "Not Checked In" }}</h3>
+          <h3 v-if="checkInStatus">Current Session Time: {{ liveSessionTime }}</h3>
         </div>
 
-        <!-- Calendar Days -->
-        <div
-          v-for="(day, index) in paddedDaysInMonth"
-          :key="'day-' + index"
-          :class="['calendar-cell', { checkedIn: day && isCheckedIn(day) }]"
-        >
-          {{ day ? day.getDate() : "" }}
+        <!-- Average and Total Time -->
+        <div class="time-summary-box">
+          <div class="time-summary">
+            <h3>Average Time Per Visit: {{ averageTime }}</h3>
+          </div>
+          <div class="time-summary">
+            <h3>Total Time Spent in the Gym: {{ totalTime }}</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Section (Calendar) -->
+      <div class="right-section">
+        <div class="calendar-section-box">
+          <h3>Check-In Calendar</h3>
+          <div class="calendar-header">
+            <button @click="prevMonth">Previous</button>
+            <span class="month-label">{{ currentMonthName }} {{ currentYear }}</span>
+            <button @click="nextMonth">Next</button>
+          </div>
+
+          <div class="calendar-grid">
+            <div v-for="(day, index) in weekDays" :key="'label-' + index" class="calendar-label">
+              {{ day }}
+            </div>
+
+            <div v-for="(day, index) in paddedDaysInMonth" :key="'day-' + index" :class="['calendar-cell', { checkedIn: day && isCheckedIn(day) }]">
+              {{ day ? day.getDate() : "" }}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -82,11 +78,7 @@ export default {
 
     paddedDaysInMonth() {
       const firstDayOfMonth = new Date(this.currentYear, this.currentMonth, 1);
-      const lastDayOfMonth = new Date(
-        this.currentYear,
-        this.currentMonth + 1,
-        0
-      );
+      const lastDayOfMonth = new Date(this.currentYear, this.currentMonth + 1, 0);
 
       const days = [];
 
@@ -102,29 +94,9 @@ export default {
     },
 
     currentMonthName() {
-      return new Date(this.currentYear, this.currentMonth).toLocaleString(
-        "default",
-        {
-          month: "long",
-        }
-      );
-    },
-
-    mounted() {
-      const userId = this.$route.params.userId;
-      if (userId) {
-        console.log(`Loading history for user ${userId}`);
-        this.fetchUserHistory(userId);
-      } else {
-        console.error("No userId provided in the route.");
-      }
-    },
-    beforeRouteUpdate(to, from, next) {
-      const newUserId = to.params.userId;
-      if (newUserId !== this.$route.params.userId) {
-        this.fetchUserData(newUserId);
-      }
-      next();
+      return new Date(this.currentYear, this.currentMonth).toLocaleString("default", {
+        month: "long",
+      });
     },
   },
 
@@ -277,54 +249,74 @@ export default {
 
 <style scoped>
 .check-in-out-view {
-  text-align: center;
   margin: 20px;
 }
 
-.status {
-  margin: 20px 0;
+.container {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
 }
 
-.status h3 {
-  margin: 5px 0;
-  font-size: 18px;
+.page-title {
+  display: flex;
+  justify-content: center;
+  font-size: 2rem;
+  color: #0576ee;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.content-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.left-section,
+.right-section {
+  flex: 1;
+  min-width: 320px;
+  max-width: 48%;
+}
+
+.status-box,
+.time-summary-box,
+.calendar-section-box {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.status-box h3,
+.time-summary-box h3,
+.calendar-section-box h3 {
   color: #333;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
 }
 
 .time-summary {
-  margin-top: 50px;
-  margin-bottom: 50px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-}
-
-.average-time,
-.total-time {
-  margin: 10px 0;
-  font-size: 16px;
-  font-weight: bold;
-  color: #555;
-}
-
-.calendar-section {
-  margin-top: 30px;
+  gap: 10px;
+  text-align: center;
 }
 
 .calendar-header {
   display: flex;
   justify-content: center;
-  align-items: center;
-  margin-bottom: 20px;
+  gap: 10px;
 }
 
 .calendar-header button {
   background-color: #007bff;
   color: white;
   border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 14px;
+  padding: 10px;
+  border-radius: 5px;
   cursor: pointer;
 }
 
@@ -332,36 +324,25 @@ export default {
   background-color: #0056b3;
 }
 
-.calendar-header .month-label {
-  margin: 0 15px;
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
-}
-
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 5px;
-  max-width: 350px;
-  margin: 0 auto;
+  gap: 10px;
   padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: #fafafa;
+  border: 1px solid #ddd;
 }
 
 .calendar-cell {
-  width: 40px;
-  height: 40px;
   display: flex;
-  align-items: center;
   justify-content: center;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  align-items: center;
   font-size: 14px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
   background-color: #f8f9fa;
-  color: #555;
 }
 
 .calendar-cell.checkedIn {
@@ -371,41 +352,7 @@ export default {
 }
 
 .calendar-cell:hover {
-  transform: scale(1.1);
-  border-color: #007bff;
-}
-
-.navigation {
-  margin-top: 10px;
-  display: flex;
-  justify-content: center;
-}
-
-.navigation button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 14px;
+  background-color: #d1ecf1;
   cursor: pointer;
-  margin: 0 5px;
-}
-
-.calendar-label {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  color: #555;
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-}
-
-.navigation button:hover {
-  background-color: #0056b3;
 }
 </style>

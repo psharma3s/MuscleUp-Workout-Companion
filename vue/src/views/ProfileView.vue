@@ -223,6 +223,9 @@ export default {
   background-color: #fafafabb;
   padding: 20px;
   margin: 0;
+  background-image: url('/src/assets/images/profile.avif');
+  background-size: cover;
+  background-position: center;
 }
 
 .sidebar {
