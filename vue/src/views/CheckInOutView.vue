@@ -12,7 +12,6 @@
           <h3 v-if="checkInStatus">Current Session Time: {{ liveSessionTime }}</h3>
         </div>
 
-        <!-- Average and Total Time -->
         <div class="time-summary-box">
           <div class="time-summary">
             <h3>Average Time Per Visit: {{ averageTime }}</h3>

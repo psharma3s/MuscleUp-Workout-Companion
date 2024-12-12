@@ -41,9 +41,9 @@
       </div>
     </div>
 
-    <!-- Main Content with Flex Layout -->
+    
     <div class="container">
-      <!-- Welcome Box on the Left Side -->
+      
       <div
         class="welcome-box w-full md:w-1/3 p-6 bg-white shadow-lg rounded-lg"
       >
@@ -56,12 +56,12 @@
             Your journey to fitness starts here. Explore, progress, and conquer
             your goals!
           </p>
-          <!-- Add more content inside this box as needed -->
+          
           <p class="text-sm text-gray-600">
             You can view your classes, your workout history and metrics, and so much more with this ultimate fitness companion. Thank you for using MuscleUp.
             Start your workout here!
           </p>
-          <!-- Start Workout Button Linking to startworkout Page -->
+          
           <router-link to="/startworkout" class="start-workout-btn">
             Start Workout
           </router-link>
@@ -69,11 +69,11 @@
         </div>
       </div>
 
-      <!-- Calendar Box on the Right Side (Using Flex) -->
+      
       <div
         class="calendar-box w-full md:w-2/3 p-6 bg-white shadow-lg rounded-lg"
       >
-        <!-- Ensure CalendarSchedule component takes the full width of its container -->
+        
         <CalendarSchedule
           :userName="$store.state.user.username"
           :isEmployee="isEmployee"
@@ -84,7 +84,7 @@
       </div>
     </div>
 
-    <!-- Footer Bar with Background Image -->
+    
     <div class="footer-bar">
       <div class="footer-content">
         <img

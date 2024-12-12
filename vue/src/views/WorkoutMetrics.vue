@@ -164,7 +164,6 @@ export default {
 <style scoped>
 .metrics-container {
   display: flex;
-  /* flex-direction: column; */
   justify-content: space-evenly;
   gap: 20px;
   padding: 20px;

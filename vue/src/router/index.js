@@ -100,7 +100,7 @@ const routes = [
   },
   {
     path: '/equipmentuse',
-    name: 'Equipment Usage',
+    name: 'equipmentuse',
     component: EmployeeEquipmentUsage,
     meta: { requiresAuth: true, requiresRole: 'ROLE_EMPLOYEE' },
   },

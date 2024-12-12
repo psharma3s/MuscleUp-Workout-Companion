@@ -11,7 +11,7 @@
         <div v-if="$route.name !== 'profile'" class="nav-buttons">
           <router-link to="/workout-metrics" class="nav-button">View Workout Metrics</router-link>
           <router-link to="/gym-checkin" class="nav-button">History</router-link>
-          <router-link to="/employee-checkout" class="nav-button">Employee Checkout</router-link>
+          <router-link v-if="isEmployee" to="/employee-checkout" class="nav-button">Employee Checkout</router-link>
           <router-link to="/startworkout" class="nav-button">Start Workout</router-link>
           <router-link to="/profile" class="nav-button">Profile</router-link>
           <router-link to="/logout" class="nav-button">Logout</router-link>
@@ -29,11 +29,11 @@
         <div v-if="$route.name === 'employee-checkout'">
           <h1>Gym Members Check-In Status</h1>
         </div>
-        <div v-if="$route.name === 'equipmentuse'">
-          <h1>Equipment Usage</h1>
-        </div>
         <div v-if="$route.name === 'startworkout'">
           <h1>Start Workout</h1>
+        </div>
+        <div v-if="$route.name === 'equipmentuse'">
+          <h1>Workout Equipment Usage Metrics</h1>
         </div>
       </div>
     </div>
@@ -63,6 +63,11 @@ export default {
         { name: 'Logout', route: '/logout' }
       ]
     };
+  },
+  computed: {
+    userRole() {
+      return this.$store.state.user.role;
+    }
   },
 };
 </script>

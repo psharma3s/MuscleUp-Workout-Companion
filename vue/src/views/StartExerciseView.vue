@@ -159,7 +159,7 @@
         <p v-if="workoutSummary.strengthSets">Strength Sets: {{ workoutSummary.strengthSets }}</p>
       </div>
     </div>
-  </div>
+  
   <div class="assistance-box">
     <h2>Equipment Assistance</h2>
     <!-- Dropdown for muscle group -->
@@ -190,6 +190,7 @@
       <h3>Exercise Animation:</h3>
       <img :src="getExerciseAnimation(selectedExercise)" alt="Exercise Animation" />
     </div>
+  </div>
   </div>
 </template>
 
@@ -346,7 +347,7 @@ export default {
     },
   },
   created() {
-    const userId = this.$store.state.user.id; // Replace with actual user ID
+    const userId = this.$store.state.user.id; 
     this.$store.dispatch('workoutMetrics/fetchMetricsByUserId', userId);
   },
 };
@@ -356,58 +357,81 @@ export default {
 .workout-container {
   display: flex;
   flex-direction: row;
-  /* Arrange items horizontally */
-  align-items: flex-start;
-  justify-content: space-between;
-  /* Space between the two boxes */
-  padding: 15px;
+  justify-content: space-around;
+  gap: 20px;
+  padding: 20px;
+  background-color: #e4e4e4e0;
+  font-family: 'Roboto', sans-serif; 
+  background-image: url(/src/assets/images/workout.jpg);
+  background-position:center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 100%;
+  height: auto;
+
 }
 
 .workout-box,
 .assistance-box {
-  width: 30%;
-  /* Ensure the two boxes are next to each other */
   padding: 20px;
-  border: 2px solid #ccc;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(145deg, #eef2f3, #ffffff); 
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  transition: box-shadow 0.3s ease-in-out; 
+  position: relative;
+}
+
+.workout-box:hover,
+.assistance-box:hover {
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
 }
 
 h1,
 h2 {
-  font-size: 24px;
-  margin-bottom: 20px;
+  font-size: 28px; 
+  margin-bottom: 15px;
   text-align: center;
+  color: #333; 
 }
 
 label {
   display: block;
   margin-top: 10px;
   font-weight: bold;
+  color: #555; 
 }
 
 select,
 input {
-  width: calc(100% - 16px);
-  /* Adjusted width to account for padding */
-  padding: 8px;
-  margin-top: 5px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  width: 100%; 
+  padding: 12px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: border-color 0.3s ease-in-out; 
+}
+
+select:focus,
+input:focus {
+  border-color: #5dd9ff; 
+  outline: none;
 }
 
 button {
-  width: calc(100% - 16px);
-  /* Adjusted width to account for padding */
-  padding: 10px;
+  width: 100%; 
+  padding: 12px;
   background-color: #28a745;
   color: white;
   border: none;
-  border-radius: 4px;
-  font-size: 16px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: bold;
   cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
 }
 
 button:hover {
@@ -416,11 +440,24 @@ button:hover {
 
 .warning-message {
   color: red;
-  margin-top: 10px;
+  margin-top: 15px;
+  font-size: 14px;
+  font-weight: bold;
 }
 
 .assistance-box img {
-  width: calc(100% - 16px);
-  /* Adjusted width to account for padding */
+  width: 100%; 
+  border-radius: 8px; 
+}
+
+@media (max-width: 768px) {
+  .workout-box,
+  .assistance-box {
+    width: 100%; 
+  }
+
+  button {
+    width: 100%; 
+  }
 }
 </style>

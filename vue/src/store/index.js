@@ -22,6 +22,7 @@ export function createStore(currentToken, currentUser) {
       token: currentToken || '',
       user: savedUser || {
         username: "",
+        role: "",
         name: "",
         email: "",
         workoutGoals: "",
